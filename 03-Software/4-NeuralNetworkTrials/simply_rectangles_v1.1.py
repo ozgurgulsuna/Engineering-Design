@@ -9,7 +9,7 @@
 # 3. Number of Hidden Layers: 1
 # 4. Number of Neurons in Hidden Layer: 10
 # 5. Number of Output Neurons: 4 (x1,y1,x2,y2)
-# 6. Activation Function: Sigmoid
+# 6. Activation Function: ReLU
 # 7. Loss Function: Mean Squared Error
 # 8. Optimizer: Gradient Descent
 # 9. Batch Size: 100 (number of images to be trained at a time)
@@ -25,16 +25,29 @@ learning_rate = 0.01
 epochs = 100
 n_hidden = 10
 n_output = 4
-n_input = 2500
+n_input = 400
 # batch_size = 100
 # n_train = 1000
 # n_test = 100
+dataset_location = 'dataset.csv'
 
 # Defin the main function
 def main():
 
     # Load the data
-    data = pd.read_csv('data.csv')
+    data = pd.read_csv(dataset_location)
+    data = np.array(data)
+    m, n = data.shape
+
+    # Split the data into training and testing sets
+    # data_train = data[0:n_train, :]
+    # data_test = data[n_train:n_train+n_test, :]
+    
+    # For now, we will use the entire dataset for training
+    data_train = data.T
+    Y_train = data_train[0:4, :] 
+    X_train = data_train[4:, :]
+    print(Y_train)
 
     # Initialize the weights and biases
     parameters = initialize_parameters(n_input, n_hidden, n_output)
@@ -42,24 +55,23 @@ def main():
     # Train the network using Gradient Descent
     for i in range(epochs):
         # Forward propagate
-        A2, cache = forward_propagate(data, parameters)
+        A2, cache = forward_propagate(X_train, parameters)
 
         # Back propagate
-        grads = back_propagate(parameters, cache, data, data)
+        grads = back_propagate(parameters, cache, X_train, Y_train)
 
         # Update the weights and biases
         parameters = update_parameters(parameters, grads, learning_rate)
 
         # Calculate the loss
-        loss = mse(data, A2)
+        loss = mse(Y_train, A2)
         print("Loss after epoch %i: %f" %(i, loss))
         print(parameters)
 
     # Test the network
-    #A2, cache = forward_propagate(data_test, parameters)
-    #loss = mse(data_test, A2)
-    #print("Loss after testing: %f" %(loss))
-
+    A2, cache = forward_propagate(X_train, parameters)
+    loss = mse(Y_train, A2)
+    print("Loss after testing: %f" %(loss))
 
 # Define a function to initialize weights and biases
 def initialize_parameters(n_x, n_h, n_y):
@@ -84,7 +96,7 @@ def forward_propagate(X, parameters):
 
     # Implement Forward Propagation to calculate A2 (probabilities)
     Z1 = np.dot(W1, X) + b1
-    A1 = sigmoid(Z1)
+    A1 = relu(Z1)
     Z2 = np.dot(W2, A1) + b2
     A2 = softmax(Z2)
     cache = {"Z1": Z1,
@@ -146,8 +158,34 @@ def update_parameters(parameters, grads, learning_rate=1.2):
     return parameters
 
 # Define the softmax function
-def softmax(x):
-    return np.exp(x) / np.sum(np.exp(x), axis=0)
+#def softmax(x):
+#    return np.exp(x) / np.sum(np.exp(x), axis=0)
+# https://stackoverflow.com/questions/43401593/softmax-of-a-large-number-errors-out
+def softmax(x, axis=-1):
+    # save typing...
+    kw = dict(axis=axis, keepdims=True)
+
+    # make every value 0 or below, as exp(0) won't overflow
+    xrel = x - x.max(**kw)
+
+    # if you wanted better handling of small exponents, you could do something like this
+    # to try and make the values as large as possible without overflowing, The 0.9
+    # is a fudge factor to try and ignore rounding errors
+    #
+    #     xrel += np.log(np.finfo(float).max / x.shape[axis]) * 0.9
+
+    exp_xrel = np.exp(xrel)
+    return exp_xrel / exp_xrel.sum(**kw)
+
+# Define the ReLU function
+def relu(x):
+    return np.maximum(0, x)
+
+# Define the derivative of the ReLU function
+def relu_derivative(x):
+    x[x<=0] = 0
+    x[x>0] = 1
+    return x
 
 # Define the sigmoid function
 def sigmoid(x):
@@ -164,4 +202,8 @@ def mse(y_true, y_pred):
 # Define the derivative of the mean squared error function
 def mse_derivative(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
+
+# Call the main function
+if __name__ == '__main__':
+    main()
 

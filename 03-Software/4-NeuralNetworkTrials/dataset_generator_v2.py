@@ -6,8 +6,8 @@ from PIL import Image, ImageDraw
 import pandas as pd
 
 # Set the size of the image
-width = 50
-height = 50
+width = 20
+height = 20
 
 # Create a list to store the coordinates and the pixel values of the rectangles
 dataset = [] # Store the coordinates and the pixel values of the rectangles for each image
@@ -15,7 +15,7 @@ dataset_all = [] # Store the coordinates and the pixel values of the rectangles 
 
 
 # Generate 100 images
-for i in range(100):
+for i in range(1000):
     # Create a new image
     image = Image.new("RGB", (width, height))
 
