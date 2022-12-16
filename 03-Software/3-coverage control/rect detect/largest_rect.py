@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from rect import *
+from rect_corner_detect import *
 import time
 start = time.time()
 
