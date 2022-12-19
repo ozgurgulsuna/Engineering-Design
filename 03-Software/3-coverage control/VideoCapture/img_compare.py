@@ -8,8 +8,7 @@ def img_compare(first,second):
     print(np.mean(first))
 
     mask = cv.inRange(second, 0, np.mean(second))
-    cv.imshow("mask", mask)
-    print(np.mean(second))
+
 
 
     #
@@ -33,11 +32,10 @@ def img_compare(first,second):
             continue
         mask = np.zeros(second.shape,np.uint8)
         cv.drawContours(mask,[cont],0,255,-1)
-        if cv.contourArea(cont)>50000 and np.mean(second) > cv.mean(second,mask = mask)[0]:
+        if cv.contourArea(cont)>30000 and np.mean(second) > cv.mean(second,mask = mask)[0]:
             con_real.append(cont)
-    blank=np.zeros(first.shape, dtype='uint8')
-    cv.drawContours(blank, con_real, -1, (255,255,255), 1)
-    cv.imshow('Contours Drawn', blank)
+    blank=np.ones(first.shape, dtype='uint8')*255
+    cv.drawContours(blank, con_real, -1, 0, -1)
     #// this matrix will be used for drawing purposes
     out=cv.cvtColor(second, cv.COLOR_GRAY2BGR)
 
@@ -52,10 +50,4 @@ def img_compare(first,second):
         cv.rectangle(out, box,(255, 0, 0))
 
 
-    cv.imshow("FIRST", first)
-    cv.imshow("SECOND", second)
-    cv.imshow("ABS-DIFF", diff)
-    cv.imshow("THRESH", thresh)
-    cv.imshow("OUTPUT", out)
-
-    cv.waitKey(0)
+    return blank

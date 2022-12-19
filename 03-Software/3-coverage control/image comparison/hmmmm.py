@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
-first = cv.imread("first.jpeg", 0)
-second = cv.imread("WhatsApp Image 2022-12-16 at 16.46.15.jpeg", 0)
+first = cv.imread("image comparison/first.jpeg", 0)
+second = cv.imread("image comparison/second.jpeg", 0)
 first = cv.GaussianBlur(first,(5,5),0)
 second = cv.GaussianBlur(second,(5,5),0)
 #
@@ -35,9 +35,10 @@ for cont in contours:
     cv.drawContours(mask,[cont],0,255,-1)
     if cv.contourArea(cont)>50000 and np.mean(second) > cv.mean(second,mask = mask)[0]:
         con_real.append(cont)
-blank=np.zeros(first.shape, dtype='uint8')
-cv.drawContours(blank, con_real, -1, (255,255,255), 1)
+blank=np.ones(first.shape, dtype='uint8')*255
+cv.drawContours(blank, con_real, -1, (0,0,0), -11)
 cv.imshow('Contours Drawn', blank)
+cv.imwrite('aaa.png',blank)
 #// this matrix will be used for drawing purposes
 out=cv.cvtColor(second, cv.COLOR_GRAY2BGR)
 
@@ -52,10 +53,6 @@ for cont in con_real:
     cv.rectangle(out, box,(255, 0, 0))
 
 
-cv.imshow("FIRST", first)
-cv.imshow("SECOND", second)
-cv.imshow("ABS-DIFF", diff)
-cv.imshow("THRESH", thresh)
-cv.imshow("OUTPUT", out)
+
 
 cv.waitKey(0)

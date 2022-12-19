@@ -4,7 +4,7 @@ import time
 import largestinteriorrectangle as lir
 start = time.time()
 # Import your picture
-img = cv.imread("Untitled2.png",cv.IMREAD_COLOR)
+img = cv.imread("rect detect/Untitled2.png",cv.IMREAD_COLOR)
 # Color it in gray
 mask = 255-cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 # Create our mask by selecting the non-zero values of the picture
