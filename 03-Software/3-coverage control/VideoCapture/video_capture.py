@@ -19,7 +19,7 @@ def rescaleFrame(frame, scale = 0.75):
 vid = cv2.VideoCapture(0)
 
 # IP Webcam app (Play Store)
-vid = cv2.VideoCapture('http://192.168.43.1:8080/video')
+vid = cv2.VideoCapture('http://192.168.137.189:8080/video')
 
 # first image to compare, in case no pictures is taken for comparison
 ret, first = vid.read()
@@ -62,8 +62,8 @@ while(True):
             cv2.imshow('Second', second)
             second = cv2.cvtColor(second, cv2.COLOR_BGR2GRAY)
 
-            cmp = img_compare.img_compare(first, second)
-            rect_detect.rect_detect(cmp)
+            cont = img_compare.img_compare(first, second)
+            rect_detect.rect_detect(cont[0],second.shape)
             
         # to quit, use key 'q'
         elif pressed == ord('q'):
