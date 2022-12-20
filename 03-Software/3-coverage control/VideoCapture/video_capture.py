@@ -2,6 +2,10 @@
 import cv2
 import img_compare
 import rect_detect
+import math
+import perspective
+import center
+
 
 def rescaleFrame(frame, scale = 0.75):
     #images,videos and live video
@@ -19,12 +23,13 @@ def rescaleFrame(frame, scale = 0.75):
 vid = cv2.VideoCapture(0)
 
 # IP Webcam app (Play Store)
-vid = cv2.VideoCapture('http://192.168.0.20:8080/video')
+vid = cv2.VideoCapture('http://192.168.3.176:8080/video')
 
 # first image to compare, in case no pictures is taken for comparison
 ret, first = vid.read()
 first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
 first = rescaleFrame(first, 0.6)
+
 
 while(True):
     # Capture the video frame by frame
@@ -41,13 +46,14 @@ while(True):
 
     pressed = cv2.waitKey(1) & 0xFF
     # pressed button
-    if ((pressed == ord('f')) or (pressed == ord('s')) or (pressed == ord('q')) or (pressed == ord('d'))):
+    if ((pressed == ord('f')) or (pressed == ord('s')) or (pressed == ord('t')) or (pressed == ord('q')) or (pressed == ord('d'))):
         # capture first image for comparison
         # waits 1 msec
         if pressed == ord('f'):
             ret, first = vid.read()
             first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
             first = rescaleFrame(first, 0.6)
+            #first = perspective.perspective(first)
 
             # Display the resulting frame
             cv2.imshow('First', first)
@@ -57,14 +63,28 @@ while(True):
             # send this frame to the image processing algorithm
             ret, second = vid.read()
             second = rescaleFrame(second, 0.6)
+            #second = perspective.perspective(second)
 
             # Display the resulting frame
             cv2.imshow('Second', second)
             second = cv2.cvtColor(second, cv2.COLOR_BGR2GRAY)
-
             cont = img_compare.img_compare(first, second)
-            rect_detect.rect_detect(cont,second.shape)
-            
+            points_sec=rect_detect.rect_detect(cont,second.shape)
+
+        elif pressed == ord('t'):
+            # send this frame to the image processing algorithm
+            ret, third = vid.read()
+            third = rescaleFrame(third, 0.6)
+            #third = perspective.perspective(third)
+
+            # Display the resulting frame
+            cv2.imshow('Third', third)
+            third = cv2.cvtColor(third, cv2.COLOR_BGR2GRAY)
+            cont13 = img_compare.img_compare(first, third)
+            points_third=rect_detect.rect_detect(cont13,third.shape)
+
+            cont23 = img_compare.img_compare(second, third)
+            points_23=rect_detect.rect_detect(cont23,third.shape)
         # to quit, use key 'q'
         elif pressed == ord('q'):
             break

@@ -24,13 +24,12 @@ def img_compare(first,second):
     _,thresh=cv.threshold(diff, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     con_real=[]
-    t=0
 
     for cont in contours:
         mask = np.zeros(second.shape,np.uint8)
         cv.drawContours(mask,[cont],0,255,-1)
         if cv.contourArea(cont)>(first.shape[0]*first.shape[1]/50) and\
-        cv.contourArea(cont)<(first.shape[0]*first.shape[1]) and np.mean(second) > cv.mean(second,mask = mask)[0]:
+        cv.contourArea(cont)<((first.shape[0]-1)*(first.shape[1]-1)) and np.mean(second) > cv.mean(second,mask = mask)[0]:
             con_real.append([cont])
     blank=np.ones(first.shape, dtype='uint8')*255
     for cont in con_real:
