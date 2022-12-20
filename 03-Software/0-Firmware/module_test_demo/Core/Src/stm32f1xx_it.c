@@ -45,6 +45,8 @@ extern int duty;
 extern int enc1_pos;
 extern uint32_t mot1_dir;
 extern uint32_t mot1_set_pos;
+extern GPIO_PinState LOW;
+extern GPIO_PinState HIGH;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -357,15 +359,20 @@ void TIM4_IRQHandler(void)
 	/* Set the direction */
 	if(duty > 0){
 		mot1_dir = 0;
+		HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
+		HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+
 	}
 	else{
 		duty = -duty;
 		mot1_dir = 1;
+		HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
+		HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
 	}
 
 	/* Limit the duty */
-	if(duty > 65535){
-		duty = 65535;
+	if(duty > 3599){
+		duty = 3599;
 	}
 
 	TIM1->CCR1 = duty;

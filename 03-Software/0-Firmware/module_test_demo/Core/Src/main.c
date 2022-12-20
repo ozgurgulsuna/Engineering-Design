@@ -65,6 +65,10 @@ uint32_t mot1_set_pos = 0; /* WHAT SHOULD BE THE LIMITS??? */
 uint32_t mot2_set_pos = 0;
 uint32_t mot3_set_pos = 0;
 
+/* Define pin state */
+GPIO_PinState LOW = 0;
+GPIO_PinState HIGH = 1;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -132,6 +136,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim1);
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+  HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -207,7 +213,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65535;
+  htim1.Init.Period = 3599;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
