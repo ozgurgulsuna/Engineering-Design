@@ -60,7 +60,7 @@ while(True):
             first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
             # first = rescaleFrame(first, 0.6)
             #first = perspective.perspective(first)
-            print(first.shape)
+            # print(first.shape)
 
             # Display the resulting frame
             cv2.imshow('First', first)
@@ -97,7 +97,7 @@ while(True):
             
             tracked_cont, tracked_img = track_complete.track_complete(cont13, cont23_img)
             tracked_img = rect_detect.rect_detect(tracked_cont,tracked_img.shape)
-            per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape)
+            per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape, third, base)
 
             second = third              #for the following tracks, update second image
 

@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import center
-def per_dir(img_base,contb,img_track,contt,shape):   
+def per_dir(img_base,contb,img_track,contt,shape, third, base):   
     base_center=center.center(contb[0],shape)
     track_center=center.center(contt[0],shape)
     img_base.astype('int64')
@@ -29,7 +29,12 @@ def per_dir(img_base,contb,img_track,contt,shape):
         else:
             print("A OK!")
             percentage=((cv.contourArea(contt[0][0])-cv.contourArea(contb[0][0]))/cv.contourArea(contb[0][0]))*100
-            print("Error of the system: ",percentage)
+            print("Area error of the system: ",percentage)
+
+            cv.imshow('Tracked image found', third)
+            cv.imshow('Base Image', base)
+            cv.imwrite('VideoCapture\TestImages\Base.jpeg', base)
+            cv.imwrite('VideoCapture\TestImages\Third.jpeg', third)
 
             return 1
     return 0        
