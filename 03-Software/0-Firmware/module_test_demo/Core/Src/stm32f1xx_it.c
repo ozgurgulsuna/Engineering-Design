@@ -454,8 +454,8 @@ void TIM4_IRQHandler(void)
 	if(duty2 > 300){
 			duty2 = 300;
 		}
-	if(duty3 > 200){
-			duty3 = 200;
+	if(duty3 > 700){
+			duty3 = 700;
 		}
 
 	TIM1->CCR1 = duty1;

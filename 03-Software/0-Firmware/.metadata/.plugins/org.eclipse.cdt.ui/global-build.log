@@ -382,3 +382,24 @@ Finished building: default.size.stdout
  
 Finished building: module_test_demo.list
  
+15:58:51 **** Incremental Build of configuration Debug for project module_test_demo ****
+make -j8 all 
+arm-none-eabi-size   module_test_demo.elf 
+   text	   data	    bss	    dec	    hex	filename
+  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
+Finished building: default.size.stdout
+ 
+16:55:29 **** Incremental Build of configuration Debug for project module_test_demo ****
+make -j8 all 
+arm-none-eabi-size   module_test_demo.elf 
+   text	   data	    bss	    dec	    hex	filename
+  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
+Finished building: default.size.stdout
+ 
+17:19:44 **** Incremental Build of configuration Debug for project module_test_demo ****
+make -j8 all 
+arm-none-eabi-size   module_test_demo.elf 
+   text	   data	    bss	    dec	    hex	filename
+  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
+Finished building: default.size.stdout
+ 

@@ -1,2 +1,10 @@
 mot1_set_pos
-pos1_error
+enc1_pos
+kp1
+mot2_set_pos
+enc2_pos
+kp2
+duty1
+ki1
+kd1
+duty2
