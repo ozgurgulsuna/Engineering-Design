@@ -41,6 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+extern float delta_t;
 extern int duty1;
 extern int duty2;
 extern int duty3;
@@ -385,24 +386,25 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 0 */
 	/* PID for motor 1*/
 
+	/* f = 1/(delta t) = 72MHz/36000 = 2kHz */
+	/* SYSCLK/ARR - Write this in a better format !!!!!!!!!!!!!!!!!!!!!!!!!!  */
+
+
 	float pos1_error = mot1_set_pos - enc1_pos;
 	float pos2_error = mot2_set_pos - enc2_pos;
 	float pos3_error = mot3_set_pos - enc3_pos;
 
-	float der1_error=(pos1_error-pre_pos1_error)/0.0008;
-	float der2_error=(pos2_error-pre_pos2_error)/0.0008;
-	float der3_error=(pos3_error-pre_pos3_error)/0.0008;
+	float der1_error=(pos1_error-pre_pos1_error)/0.0005;
+	float der2_error=(pos2_error-pre_pos2_error)/0.0005;
+	float der3_error=(pos3_error-pre_pos3_error)/0.0005;
 
-	int1_error+=pos1_error*0.0008;
-	int2_error+=pos2_error*0.0008;
-	int3_error+=pos3_error*0.0008;
+	int1_error+=pos1_error*0.0005;
+	int2_error+=pos2_error*0.0005;
+	int3_error+=pos3_error*0.0005;
 
 	pre_pos1_error=pos1_error;
 	pre_pos2_error=pos2_error;
 	pre_pos3_error=pos3_error;
-
-	/* 1/(delta t) = 72MHz/65535 = 1098.6496 */
-	/* SYSCLK/ARR - Write this in a better format !!!!!!!!!!!!!!!!!!!!!!!!!!  */
 
 	/* Set the duty (only proportional implemented for now) */
 	duty1 = (int)(kp1*pos1_error+kd1*der1_error+ki1*int1_error);

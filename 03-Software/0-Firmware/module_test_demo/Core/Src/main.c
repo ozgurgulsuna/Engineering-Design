@@ -54,6 +54,8 @@ int enc2_pos = 0;
 int enc3_pos = 0;
 int cnt = 0;
 
+float delta_t = 1/2000;
+
 float kp1=10.0;
 float ki1=0.0;
 float kd1=0.0;
@@ -84,6 +86,12 @@ uint32_t mot3_set_pos = 0;
 GPIO_PinState LOW = 0;
 GPIO_PinState HIGH = 1;
 
+/* Boolean enable variable for 2-DOF loopy mode */
+enable_2DOF = 0;
+pos1_2DOF = 0;
+pos2_2DOF = 0;
+pos3_2DOF = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,24 +102,18 @@ static void MX_TIM1_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void loop_2DOF(int pos1, int pos2, int pos3);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*
-void set_pwm_duty_cycle(uint8_t percent)
-{
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = percent * 5U;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+void loop_2DOF(int pos1, int pos2, int pos3){
+	// Configure set position values for position 1
+	mot1_set_pos = pos1;
+	mot2_set_pos = pos2;
+	mot3_set_pos = pos3;
+	enable_2DOF = 0;
 }
-*/
 /* USER CODE END 0 */
 
 /**
@@ -162,7 +164,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  if(enable_2DOF){
+		  loop_2DOF(pos1_2DOF, pos2_2DOF, pos3_2DOF);
+	  }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

@@ -1,10 +1,10 @@
-17:19:44 **** Incremental Build of configuration Debug for project module_test_demo ****
+02:19:12 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-size   module_test_demo.elf 
    text	   data	    bss	    dec	    hex	filename
-  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
 
-17:19:44 Build Finished. 0 errors, 0 warnings. (took 387ms)
+02:19:12 Build Finished. 0 errors, 0 warnings. (took 227ms)
 

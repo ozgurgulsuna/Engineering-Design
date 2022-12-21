@@ -1,405 +1,65 @@
-23:19:25 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-00:32:15 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-../Core/Src/stm32f1xx_it.c: In function 'EXTI4_IRQHandler':
-../Core/Src/stm32f1xx_it.c:315:4: error: 'enc_pos' undeclared (first use in this function); did you mean 'enc3_pos'?
-  315 |    enc_pos --;
-      |    ^~~~~~~
-      |    enc3_pos
-../Core/Src/stm32f1xx_it.c:315:4: note: each undeclared identifier is reported only once for each function it appears in
-make: *** [Core/Src/subdir.mk:34: Core/Src/stm32f1xx_it.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
-00:32:32 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-../Core/Src/stm32f1xx_it.c: In function 'EXTI4_IRQHandler':
-../Core/Src/stm32f1xx_it.c:315:4: error: unknown type name 'enc3'
-  315 |    enc3 _pos --;
-      |    ^~~~
-../Core/Src/stm32f1xx_it.c:315:14: error: expected '=', ',', ';', 'asm' or '__attribute__' before '--' token
-  315 |    enc3 _pos --;
-      |              ^~
-make: *** [Core/Src/subdir.mk:34: Core/Src/stm32f1xx_it.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
-00:32:48 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-00:34:56 **** Incremental Build of configuration Debug for project module_test_demo ****
+01:59:39 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_hal_msp.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_hal_msp.d" -MT"Core/Src/stm32f1xx_hal_msp.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_hal_msp.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
+../Core/Src/main.c:90:1: warning: data definition has no type or storage class
+   90 | enable_2DOF = 0;
+      | ^~~~~~~~~~~
+../Core/Src/main.c:90:1: warning: type defaults to 'int' in declaration of 'enable_2DOF' [-Wimplicit-int]
+../Core/Src/main.c:91:1: warning: data definition has no type or storage class
+   91 | pos1_2DOF = 0;
+      | ^~~~~~~~~
+../Core/Src/main.c:91:1: warning: type defaults to 'int' in declaration of 'pos1_2DOF' [-Wimplicit-int]
+../Core/Src/main.c:92:1: warning: data definition has no type or storage class
+   92 | pos2_2DOF = 0;
+      | ^~~~~~~~~
+../Core/Src/main.c:92:1: warning: type defaults to 'int' in declaration of 'pos2_2DOF' [-Wimplicit-int]
+../Core/Src/main.c:93:1: warning: data definition has no type or storage class
+   93 | pos3_2DOF = 0;
+      | ^~~~~~~~~
+../Core/Src/main.c:93:1: warning: type defaults to 'int' in declaration of 'pos3_2DOF' [-Wimplicit-int]
 arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 Finished building target: module_test_demo.elf
  
 arm-none-eabi-size   module_test_demo.elf 
 arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
    text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
 Finished building: module_test_demo.list
  
-00:43:04 **** Incremental Build of configuration Debug for project module_test_demo ****
+02:12:53 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-size   module_test_demo.elf 
    text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
-00:44:21 **** Incremental Build of configuration Debug for project module_test_demo ****
+02:16:27 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-size   module_test_demo.elf 
    text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
-00:44:37 **** Incremental Build of configuration Debug for project module_test_demo ****
+02:16:51 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-size   module_test_demo.elf 
    text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
-00:44:50 **** Incremental Build of configuration Debug for project module_test_demo ****
+02:17:15 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-size   module_test_demo.elf 
    text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
-00:46:26 **** Incremental Build of configuration Debug for project module_test_demo ****
+02:19:12 **** Incremental Build of configuration Debug for project module_test_demo ****
 make -j8 all 
 arm-none-eabi-size   module_test_demo.elf 
    text	   data	    bss	    dec	    hex	filename
-  15996	     36	   2012	  18044	   467c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-00:48:32 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16012	     36	   2012	  18060	   468c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-00:55:06 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16012	     36	   2012	  18060	   468c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-01:13:59 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16012	     36	   2012	  18060	   468c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-01:16:32 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16012	     36	   2012	  18060	   468c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-01:19:10 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16012	     36	   2012	  18060	   468c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-01:32:42 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  13316	     36	   1964	  15316	   3bd4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-01:55:48 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  13340	     36	   1964	  15340	   3bec	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:03:53 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-../Core/Src/stm32f1xx_it.c: In function 'TIM4_IRQHandler':
-../Core/Src/stm32f1xx_it.c:394:8: warning: unused variable 'der3_error' [-Wunused-variable]
-  394 |  float der3_error=(pos3_error-pre_pos3_error)/0.0008;
-      |        ^~~~~~~~~~
-../Core/Src/stm32f1xx_it.c:393:8: warning: unused variable 'der2_error' [-Wunused-variable]
-  393 |  float der2_error=(pos2_error-pre_pos2_error)/0.0008;
-      |        ^~~~~~~~~~
-../Core/Src/stm32f1xx_it.c:392:8: warning: unused variable 'der1_error' [-Wunused-variable]
-  392 |  float der1_error=(pos1_error-pre_pos1_error)/0.0008;
-      |        ^~~~~~~~~~
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  15844	     36	   1988	  17868	   45cc	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:05:06 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-../Core/Src/stm32f1xx_it.c: In function 'TIM4_IRQHandler':
-../Core/Src/stm32f1xx_it.c:408:61: error: expected ';' before ')' token
-  408 |  duty1 = (int)(kp1*pos1_error)+kd1*der1_error+ki1*int1_error);
-      |                                                             ^
-      |                                                             ;
-../Core/Src/stm32f1xx_it.c:408:61: error: expected statement before ')' token
-../Core/Src/stm32f1xx_it.c:409:61: error: expected ';' before ')' token
-  409 |  duty2 = (int)(kp2*pos2_error)+kd2*der2_error+ki2*int2_error);
-      |                                                             ^
-      |                                                             ;
-../Core/Src/stm32f1xx_it.c:409:61: error: expected statement before ')' token
-../Core/Src/stm32f1xx_it.c:410:61: error: expected ';' before ')' token
-  410 |  duty3 = (int)(kp3*pos3_error)+kd3*der3_error+ki3*int3_error);
-      |                                                             ^
-      |                                                             ;
-../Core/Src/stm32f1xx_it.c:410:61: error: expected statement before ')' token
-make: *** [Core/Src/subdir.mk:34: Core/Src/stm32f1xx_it.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
-02:05:16 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:07:40 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-02:25:31 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:30:54 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:33:03 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:47:55 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_hal_msp.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_hal_msp.d" -MT"Core/Src/stm32f1xx_hal_msp.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_hal_msp.o"
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-02:48:51 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-02:49:25 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16036	     36	   2012	  18084	   46a4	module_test_demo.elf
-Finished building: default.size.stdout
- 
-03:11:14 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16024	     36	   2012	  18072	   4698	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-03:15:53 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16024	     36	   2012	  18072	   4698	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-03:27:39 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16028	     36	   2012	  18076	   469c	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-03:52:22 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
-arm-none-eabi-g++ -o "module_test_demo.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\module_test_demo\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="module_test_demo.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: module_test_demo.elf
- 
-arm-none-eabi-size   module_test_demo.elf 
-arm-none-eabi-objdump -h -S  module_test_demo.elf  > "module_test_demo.list"
-   text	   data	    bss	    dec	    hex	filename
-  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
-Finished building: default.size.stdout
- 
-Finished building: module_test_demo.list
- 
-15:58:51 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
-Finished building: default.size.stdout
- 
-16:55:29 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
-Finished building: default.size.stdout
- 
-17:19:44 **** Incremental Build of configuration Debug for project module_test_demo ****
-make -j8 all 
-arm-none-eabi-size   module_test_demo.elf 
-   text	   data	    bss	    dec	    hex	filename
-  16032	     36	   2012	  18080	   46a0	module_test_demo.elf
+  16140	     36	   2028	  18204	   471c	module_test_demo.elf
 Finished building: default.size.stdout
  
