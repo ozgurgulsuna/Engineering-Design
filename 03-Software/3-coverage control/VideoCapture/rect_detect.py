@@ -18,19 +18,19 @@ def rect_detect(conts,shape):
     for x in conts:
         mask = np.zeros(shape, dtype='uint8')
         contour = x[0][:, 0, :]
-        print(contour)
+        # print(contour)
         cv.drawContours(mask, x, -1, 255, -1)
         grid=mask>0
         cv.imshow("mask", (grid*255).astype("uint8"))
         rect=lir.lir(grid,contour)
-        print(rect)
+        # print(rect)
         cv.rectangle(blank,[rect[0],rect[1]],[rect[2]+rect[0],rect[3]+rect[1]],255,-1)
         recto.append([rect])
 
     cv.imshow("hey", blank)
     end = time.time()
-    print(end - start)
+    # print(end - start)
     cv.waitKey(0)
-    return recto
+    return blank
 
     

@@ -2,9 +2,11 @@
 import cv2
 import img_compare
 import rect_detect
+import track_complete
 import math
 import perspective
 import center
+import per_dir as per_dir
 
 
 def rescaleFrame(frame, scale = 0.75):
@@ -20,16 +22,20 @@ def rescaleFrame(frame, scale = 0.75):
 # define a video capture object
 
 # 0 : webcam, to find other cameras, change the number
-vid = cv2.VideoCapture(0)
+#vid = cv2.VideoCapture(0)
 
 # IP Webcam app (Play Store)
-vid = cv2.VideoCapture('http://192.168.3.176:8080/video')
+vid = cv2.VideoCapture('http://192.168.137.2:8080/video')
 
-# first image to compare, in case no pictures is taken for comparison
+
+# first, second and base images to compare, in case no pictures is taken for comparison
 ret, first = vid.read()
 first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
 first = rescaleFrame(first, 0.6)
+base = first
+second = first
 
+i = 0               # only for saving images
 
 while(True):
     # Capture the video frame by frame
@@ -46,7 +52,7 @@ while(True):
 
     pressed = cv2.waitKey(1) & 0xFF
     # pressed button
-    if ((pressed == ord('f')) or (pressed == ord('s')) or (pressed == ord('t')) or (pressed == ord('q')) or (pressed == ord('d'))):
+    if ((pressed == ord('f')) or (pressed == ord('s')) or (pressed == ord('t')) or (pressed == ord('b')) or (pressed == ord('q')) or (pressed == ord('d'))):
         # capture first image for comparison
         # waits 1 msec
         if pressed == ord('f'):
@@ -54,9 +60,11 @@ while(True):
             first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
             first = rescaleFrame(first, 0.6)
             #first = perspective.perspective(first)
+            print(first.shape)
 
             # Display the resulting frame
             cv2.imshow('First', first)
+            cv2.imwrite('VideoCapture\TestImages\ClearImage.jpeg', first)
     
         # capture second image
         elif pressed == ord('s'):
@@ -68,8 +76,11 @@ while(True):
             # Display the resulting frame
             cv2.imshow('Second', second)
             second = cv2.cvtColor(second, cv2.COLOR_BGR2GRAY)
-            cont = img_compare.img_compare(first, second)
-            points_sec=rect_detect.rect_detect(cont,second.shape)
+            cont12, cont12_img = img_compare.img_compare(first, second)
+            # points_sec=rect_detect.rect_detect(cont,second.shape)
+
+            cv2.imwrite('VideoCapture\TestImages\Shadow{}.jpeg'.format(i), first)
+            i = i + 1
 
         elif pressed == ord('t'):
             # send this frame to the image processing algorithm
@@ -80,13 +91,31 @@ while(True):
             # Display the resulting frame
             cv2.imshow('Third', third)
             third = cv2.cvtColor(third, cv2.COLOR_BGR2GRAY)
-            cont13 = img_compare.img_compare(first, third)
-            points_third=rect_detect.rect_detect(cont13,third.shape)
+            cont13, cont13_img = img_compare.img_compare(first, third)
 
-            cont23 = img_compare.img_compare(second, third)
-            points_23=rect_detect.rect_detect(cont23,third.shape)
+            cont23, cont23_img = img_compare.img_compare(second, third)                     # last
+            
+            tracked_cont, tracked_img = track_complete.track_complete(cont13, cont23_img)
+            tracked_img = rect_detect.rect_detect(tracked_cont,tracked_img.shape)
+            per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape)
+
+            second = third              #for the following tracks, update second image
+
+
+        if pressed == ord('b'):
+            ret, base = vid.read()
+            base = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+            base = rescaleFrame(base, 0.6)
+            #first = perspective.perspective(first)
+
+            # Display the resulting frame
+            cv2.imshow('Base', base)
+            cv2.imwrite('VideoCapture\TestImages\Base.jpeg', base)
+
+            cont_base, cont_base_img = img_compare.img_compare(first, base)
+
         # to quit, use key 'q'
-        elif pressed == ord('q'):
+        elif pressed == ord('q'): 
             break
 
         # to destroy windows, use key 'd'

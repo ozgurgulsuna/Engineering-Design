@@ -47,4 +47,4 @@ def img_compare(first,second):
 
 
 
-    return con_real
+    return con_real, blank
