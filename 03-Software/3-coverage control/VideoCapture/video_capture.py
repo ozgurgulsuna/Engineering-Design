@@ -22,16 +22,16 @@ def rescaleFrame(frame, scale = 0.75):
 # define a video capture object
 
 # 0 : webcam, to find other cameras, change the number
-#vid = cv2.VideoCapture(0)
+vid = cv2.VideoCapture(0)
 
 # IP Webcam app (Play Store)
-vid = cv2.VideoCapture('http://192.168.137.2:8080/video')
+#vid = cv2.VideoCapture('http://192.168.137.2:8080/video')
 
 
 # first, second and base images to compare, in case no pictures is taken for comparison
 ret, first = vid.read()
 first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
-first = rescaleFrame(first, 0.6)
+# first = rescaleFrame(first, 0.6)
 base = first
 second = first
 
@@ -45,7 +45,7 @@ while(True):
     # print('Is camera is available? ',ret)
 
     # for ip based camera, scale is needed to obtain videos that fits to the screen
-    frame = rescaleFrame(frame, 0.6)
+    # frame = rescaleFrame(frame, 0.6)
 
     # Display the resulting frame
     cv2.imshow('Live Video', frame)
@@ -58,7 +58,7 @@ while(True):
         if pressed == ord('f'):
             ret, first = vid.read()
             first = cv2.cvtColor(first, cv2.COLOR_BGR2GRAY)
-            first = rescaleFrame(first, 0.6)
+            # first = rescaleFrame(first, 0.6)
             #first = perspective.perspective(first)
             print(first.shape)
 
@@ -70,7 +70,7 @@ while(True):
         elif pressed == ord('s'):
             # send this frame to the image processing algorithm
             ret, second = vid.read()
-            second = rescaleFrame(second, 0.6)
+            # second = rescaleFrame(second, 0.6)
             #second = perspective.perspective(second)
 
             # Display the resulting frame
@@ -85,7 +85,7 @@ while(True):
         elif pressed == ord('t'):
             # send this frame to the image processing algorithm
             ret, third = vid.read()
-            third = rescaleFrame(third, 0.6)
+            # third = rescaleFrame(third, 0.6)
             #third = perspective.perspective(third)
 
             # Display the resulting frame
@@ -105,7 +105,7 @@ while(True):
         if pressed == ord('b'):
             ret, base = vid.read()
             base = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
-            base = rescaleFrame(base, 0.6)
+            # base = rescaleFrame(base, 0.6)
             #first = perspective.perspective(first)
 
             # Display the resulting frame
