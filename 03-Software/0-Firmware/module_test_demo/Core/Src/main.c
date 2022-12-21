@@ -53,12 +53,27 @@ int enc1_pos;
 int enc2_pos = 0;
 int enc3_pos = 0;
 int cnt = 0;
-uint32_t mot1_dir = 0; /* Either 0 or 1 */
-uint32_t mot2_dir = 0;
-uint32_t mot3_dir = 0;
+
+float kp1=10.0;
+float ki1=0.0;
+float kd1=0.0;
+
+float kp2=10.0;
+float ki2=0.0;
+float kd2=0.0;
+
+float kp3=10.0;
+float ki3=0.0;
+float kd3=0.0;
+
+uint8_t mot1_dir = 0; /* Either 0 or 1 */
+uint8_t mot2_dir = 0;
+uint8_t mot3_dir = 0;
 
 /* PWM-Specific Variables */
-int duty = 0; /* Between 0 and 1 */
+int duty1 = 0;
+int duty2 = 0;
+int duty3 = 0;
 
 /* Position set */
 uint32_t mot1_set_pos = 0; /* WHAT SHOULD BE THE LIMITS??? */
@@ -136,6 +151,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim1);
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
   HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
   HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
   /* USER CODE END 2 */
@@ -213,7 +230,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 3599;
+  htim1.Init.Period = 719;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -292,9 +309,9 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 0;
+  htim4.Init.Prescaler = 7;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 65535;
+  htim4.Init.Period = 35999;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -388,12 +405,16 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, IN1_A_Pin|IN1_B_Pin|IN2_A_Pin|IN2_B_Pin
                           |IN3_A_Pin|IN3_B_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : ENC1_A_Pin ENC1_B_Pin ENC2_A_Pin ENC2_B_Pin
-                           ENC3_A_Pin ENC3_B_Pin */
-  GPIO_InitStruct.Pin = ENC1_A_Pin|ENC1_B_Pin|ENC2_A_Pin|ENC2_B_Pin
-                          |ENC3_A_Pin|ENC3_B_Pin;
+  /*Configure GPIO pins : ENC1_A_Pin ENC1_B_Pin ENC2_A_Pin ENC2_B_Pin */
+  GPIO_InitStruct.Pin = ENC1_A_Pin|ENC1_B_Pin|ENC2_A_Pin|ENC2_B_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : ENC3_A_Pin ENC3_B_Pin */
+  GPIO_InitStruct.Pin = ENC3_A_Pin|ENC3_B_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : IN1_A_Pin IN1_B_Pin IN2_A_Pin IN2_B_Pin

@@ -42,8 +42,6 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 /* Define PID coefficients */
-#define 	Kp		100				/* Proportional */
-#define 	Kd		0.03			/* Derivative 	*/
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
