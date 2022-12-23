@@ -8,8 +8,7 @@ def img_compare(first,second):
     print(np.mean(first))
 
     mask = cv.inRange(second, 0, np.mean(second))
-    cv.imshow("mask", mask)
-    print(np.mean(second))
+
 
 
     #
@@ -25,21 +24,19 @@ def img_compare(first,second):
     _,thresh=cv.threshold(diff, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     con_real=[]
-    t=0
-    print(type(cv.mean(second,mask = mask)[0]))
+
     for cont in contours:
-        if t==0:
-            t+=1
-            continue
         mask = np.zeros(second.shape,np.uint8)
         cv.drawContours(mask,[cont],0,255,-1)
-        if cv.contourArea(cont)>50000 and np.mean(second) > cv.mean(second,mask = mask)[0]:
-            con_real.append(cont)
-    blank=np.zeros(first.shape, dtype='uint8')
-    cv.drawContours(blank, con_real, -1, (255,255,255), 1)
-    cv.imshow('Contours Drawn', blank)
+        if cv.contourArea(cont)>(first.shape[0]*first.shape[1]/50) and\
+        cv.contourArea(cont)<((first.shape[0]-1)*(first.shape[1]-1)) and np.mean(second) > cv.mean(second,mask = mask)[0]:
+            con_real.append([cont])
+    blank=np.ones(first.shape, dtype='uint8')*255
+    for cont in con_real:
+        cv.drawContours(blank, cont, -1, 0, -1)
+        cv.imshow("abc", blank)
+        cv.imwrite("abc.png", blank)
     #// this matrix will be used for drawing purposes
-    out=cv.cvtColor(second, cv.COLOR_GRAY2BGR)
 
 
     #// For each detected contour, calculate its bounding rectangle and draw it
@@ -47,15 +44,7 @@ def img_compare(first,second):
     #// or small enough along with other contour properties.
     #// Ref: https://docs.opencv.org/trunk/dd/d49/tutorial_py_contour_features.html
     #// Ref: https://docs.opencv.org/trunk/d1/d32/tutorial_py_contour_properties.html
-    for cont in con_real:
-        box = cv.boundingRect(cont)
-        cv.rectangle(out, box,(255, 0, 0))
 
 
-    cv.imshow("FIRST", first)
-    cv.imshow("SECOND", second)
-    cv.imshow("ABS-DIFF", diff)
-    cv.imshow("THRESH", thresh)
-    cv.imshow("OUTPUT", out)
 
-    cv.waitKey(0)
+    return con_real, blank
