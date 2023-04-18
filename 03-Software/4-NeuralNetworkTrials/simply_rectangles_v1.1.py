@@ -9,7 +9,7 @@
 # 3. Number of Hidden Layers: 1
 # 4. Number of Neurons in Hidden Layer: 10
 # 5. Number of Output Neurons: 4 (x1,y1,x2,y2)
-# 6. Activation Function: ReLU
+# 6. Activation Function: Sigmoid
 # 7. Loss Function: Mean Squared Error
 # 8. Optimizer: Gradient Descent
 # 9. Batch Size: 100 (number of images to be trained at a time)
@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 
 # Define the parameters
-learning_rate = 0.01
+learning_rate = 100
 epochs = 100
 n_hidden = 10
 n_output = 4
@@ -66,12 +66,13 @@ def main():
         # Calculate the loss
         loss = mse(Y_train, A2)
         print("Loss after epoch %i: %f" %(i, loss))
-        print(parameters)
+        # print(parameters)
 
     # Test the network
     A2, cache = forward_propagate(X_train, parameters)
     loss = mse(Y_train, A2)
     print("Loss after testing: %f" %(loss))
+    print(A2) # WHY DOES THE OUTPUT NOT MATCH THE ACTUAL VALUES?
 
 # Define a function to initialize weights and biases
 def initialize_parameters(n_x, n_h, n_y):
@@ -96,7 +97,7 @@ def forward_propagate(X, parameters):
 
     # Implement Forward Propagation to calculate A2 (probabilities)
     Z1 = np.dot(W1, X) + b1
-    A1 = relu(Z1)
+    A1 = sigmoid(Z1)
     Z2 = np.dot(W2, A1) + b2
     A2 = softmax(Z2)
     cache = {"Z1": Z1,
@@ -176,16 +177,6 @@ def softmax(x, axis=-1):
 
     exp_xrel = np.exp(xrel)
     return exp_xrel / exp_xrel.sum(**kw)
-
-# Define the ReLU function
-def relu(x):
-    return np.maximum(0, x)
-
-# Define the derivative of the ReLU function
-def relu_derivative(x):
-    x[x<=0] = 0
-    x[x>0] = 1
-    return x
 
 # Define the sigmoid function
 def sigmoid(x):

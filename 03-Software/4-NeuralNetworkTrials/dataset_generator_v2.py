@@ -34,10 +34,10 @@ for i in range(1000):
     y2 = random.randint(y1, height)
 
     # Save the coordinates of the rectangle
-    dataset.append(x1)
-    dataset.append(y1)
-    dataset.append(x2)
-    dataset.append(y2)
+    dataset.append(x1/width) # Normalize the coordinates
+    dataset.append(y1/height) # Normalize the coordinates
+    dataset.append(x2/width) # Normalize the coordinates
+    dataset.append(y2/height) # Normalize the coordinates
 
     # Set the image pixels
     for y in range(height):  
