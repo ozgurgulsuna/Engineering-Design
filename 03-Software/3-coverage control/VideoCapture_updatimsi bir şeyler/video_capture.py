@@ -99,9 +99,9 @@ while(True):
             cont23, cont23_img = img_compare.img_compare(second, third)                     # last
             
             tracked_cont, tracked_img = track_complete.track_complete(cont13, cont23_img)
-            tracked_img = rect_detect.rect_detect(tracked_cont,tracked_img.shape)
+            tracked_img, rect_points = rect_detect.rect_detect(tracked_cont,tracked_img.shape)
             tracked_cont, _ = cv2.findContours(tracked_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape)
+            per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape, rect_points)
 
             second = third              #for the following tracks, update second image
 

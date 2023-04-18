@@ -24,13 +24,13 @@ def rect_detect(conts,shape):
         cv.imshow("mask", (grid*255).astype("uint8"))
         rect=lir.lir(grid,contour)
         # print(rect)
-        cv.rectangle(blank,[rect[0],rect[1]],[rect[2]+rect[0],rect[3]+rect[1]],255,-1)
+        cv.rectangle(blank,(rect[0],rect[1]),(rect[2]+rect[0],rect[3]+rect[1]),255,-1)
         recto.append([rect])
 
     cv.imshow("hey", blank)
     end = time.time()
-    # print(end - start)
+    #print(end - start)
     cv.waitKey(0)
-    return blank
+    return blank,rect
 
     

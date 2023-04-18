@@ -5,7 +5,7 @@ def img_compare(first,second):
     first = cv.GaussianBlur(first,(5,5),0)
     second = cv.GaussianBlur(second,(5,5),0)
     #
-    print(np.mean(first))
+    #print(np.mean(first))
 
     mask = cv.inRange(second, 0, np.mean(second))
 
