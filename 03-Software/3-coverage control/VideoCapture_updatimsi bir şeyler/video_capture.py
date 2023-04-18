@@ -1,3 +1,4 @@
+##sudo modprobe bcm2835-v4l2
 # import the opencv library
 import cv2
 import img_compare
