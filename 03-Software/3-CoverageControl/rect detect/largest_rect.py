@@ -5,7 +5,7 @@ import time
 start = time.time()
 
 # Read image 
-img = cv.imread('untitled2.png', cv.IMREAD_COLOR) # road.png is the filename
+img = cv.imread('Untitled2.png', cv.IMREAD_COLOR) # road.png is the filename
 # Convert the image to gray-scale
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 shape=gray.shape
