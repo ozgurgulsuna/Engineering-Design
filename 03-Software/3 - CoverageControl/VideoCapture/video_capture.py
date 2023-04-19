@@ -22,10 +22,10 @@ def rescaleFrame(frame, scale = 0.75):
 # define a video capture object
 
 # 0 : webcam, to find other cameras, change the number
-#vid = cv2.VideoCapture(0)
+vid = cv2.VideoCapture(0)
 
 # IP Webcam app (Play Store)
-vid = cv2.VideoCapture('http://144.122.227.69:8080/video')
+#vid = cv2.VideoCapture('http://144.122.227.69:8080/video')
 
 
 # first, second and base images to compare, in case no pictures is taken for comparison

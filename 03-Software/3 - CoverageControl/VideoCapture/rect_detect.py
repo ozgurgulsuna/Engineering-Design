@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import time
-import largestinteriorrectangle as lir
+import lir as lir
 
 def rect_detect(conts,shape):
     start = time.time()
