@@ -36,6 +36,7 @@ base = first
 second = first
 
 i = 0               # only for saving images
+num = 0
 
 while(True):
     # Capture the video frame by frame
@@ -97,9 +98,12 @@ while(True):
             
             tracked_cont, tracked_img = track_complete.track_complete(cont13, cont23_img)
             tracked_img = rect_detect.rect_detect(tracked_cont,tracked_img.shape)
-            per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape, third, base)
+            flag = per_dir.per_dir(cont_base_img, cont_base, tracked_img, tracked_cont, tracked_img.shape, third, base,num)
 
             second = third              #for the following tracks, update second image
+
+            if flag:
+                num = num + 1
 
 
         if pressed == ord('b'):

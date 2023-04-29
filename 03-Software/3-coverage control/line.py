@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 # Read image 
-img = cv.imread('Untitled.png', cv.IMREAD_COLOR) # road.png is the filename
+img = cv.imread('D:\Desktop\GITHUB\Engineering-Design\03-Software\3-coverage control\image comparison\WhatsApp Image 2022-12-16 at 16.46.15.jpeg', cv.IMREAD_COLOR) # road.png is the filename
 # Convert the image to gray-scale
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 # Find the edges in the image using canny detector
