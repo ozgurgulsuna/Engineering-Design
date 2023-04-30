@@ -5,7 +5,7 @@ import lir_within_contour as lir
 
 
 def rect_detect(conts,shape):
-    start = time.time()
+    #start = time.time()
     # Import your picture
     # Color it in gray
 
@@ -30,10 +30,10 @@ def rect_detect(conts,shape):
         cv.rectangle(blank,[rect[0],rect[1]],[rect[2]+rect[0],rect[3]+rect[1]],255,-1)
         recto.append([rect])
 
-    cv.imshow("Rectangle detected image", blank)
-    end = time.time()
+    #cv.imshow("Rectangle detected image", blank)
+    #end = time.time()
     # print(end - start)
-    cv.waitKey(0)
-    return blank
+    #cv.waitKey(0)
+    return blank, rect
 
     

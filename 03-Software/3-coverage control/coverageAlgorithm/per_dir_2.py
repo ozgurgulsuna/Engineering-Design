@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-def per_dir(img_base,contb,img_track,contt,shape,rect_points):
+def per_dir(shape,rect_points):
     #### base_ratio===ekranda görünmesi gereken yerin x/y oranı
     base_ratio=60/45   ##değiştirilecek
     err=0.05
