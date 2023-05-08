@@ -1,5 +1,6 @@
 %% Find Equadistance Point on Ground Between Two Poles %%
 
+
 min = 13;
 main = 42;
 
