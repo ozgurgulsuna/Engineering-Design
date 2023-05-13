@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define	BUF_SIZE	16
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -41,12 +41,18 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern char buf[BUF_SIZE];
+extern uint16_t i;
+extern uint16_t led_bool;
+extern uint8_t usb_out[32];
+extern uint8_t blink_led_cmd[32];
+extern uint8_t usb_in[32];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+extern int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t Len);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -55,7 +61,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -197,6 +203,23 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles USB On The Go FS global interrupt.
+  */
+void OTG_FS_IRQHandler(void)
+{
+  /* USER CODE BEGIN OTG_FS_IRQn 0 */
+	if(led_bool == 0){
+		CDC_Receive_FS(usb_in,sizeof(usb_in));
+	}
+
+  /* USER CODE END OTG_FS_IRQn 0 */
+  HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
+  /* USER CODE BEGIN OTG_FS_IRQn 1 */
+
+  /* USER CODE END OTG_FS_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 

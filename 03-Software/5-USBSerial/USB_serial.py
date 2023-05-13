@@ -5,7 +5,7 @@ from serial.tools import list_ports
 
 def main():
     print("Hello World!")
-    ser = serial.Serial('COM7') # open serial port
+    ser = serial.Serial('COM3') # open serial port
     print(ser.name)             # check which port was really used
 
     while True:
