@@ -298,8 +298,11 @@ int* largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,in
     int* v_top2bottom = vertical_adjacency_top2bottom(grid, n_rows, n_cols);
     int* v_bottom2top = vertical_adjacency_bottom2top(grid, n_rows, n_cols);
     ////////////////////////////////////////////////////////////////////////////////////////
-    
-    int i, x, y;
+    //span_map = np.zeros(shape + (2,), "uint32")
+    //vazgeçtim (who needs span_map anyway)
+
+
+    int i, x, y, x_correct,y_correct,w_correct=0,h_correct=0;
     for (i = 0; i < n_contour; i++){
         //x, y = contour[idx, 0], contour[idx, 1]
         x = contour[2*i];
@@ -330,11 +333,42 @@ int* largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,in
         int* xy_array_2 = get_xy_array(x, y, span_array_2, h_l2r_b2t[0], 2);//2
         int* xy_array_3 = get_xy_array(x, y, span_array_3, h_r2l_b2t[0], 3);//3
         ////////////////////////////////////////////////////////////////////////////////////
-        
+        //damn output if you can do better, try it then.
+        for(i=0;i<h_l2r_t2b[0];i++){
+           if(span_array_0[2*i]*span_array_0[2*i+1]<w_correct*h_correct){
+                w_correct=span_array_0[2*i];
+                h_correct=span_array_0[2*i+1];
+                x_correct=xy_array_0[2*i];
+                y_correct=xy_array_0[2*i+1];
+           }
+        }
 
+        for(i=0;i<h_r2l_t2b[0];i++){
+            if(span_array_1[2*i]*span_array_1[2*i+1]<w_correct*h_correct){
+                w_correct=span_array_1[2*i];
+                h_correct=span_array_1[2*i+1];
+                x_correct=xy_array_1[2*i];
+                y_correct=xy_array_1[2*i+1];
+            }
+        }
 
+        for(i=0;i<h_l2r_b2t[0];i++){
+            if(span_array_2[2*i]*span_array_2[2*i+1]<w_correct*h_correct){
+                w_correct=span_array_2[2*i];
+                h_correct=span_array_2[2*i+1];
+                x_correct=xy_array_2[2*i];
+                y_correct=xy_array_2[2*i+1];
+            }
+        }
 
-
+        for(i=0;i<h_r2l_b2t[0];i++){
+            if(span_array_3[2*i]*span_array_3[2*i+1]<w_correct*h_correct){
+                w_correct=span_array_3[2*i];
+                h_correct=span_array_3[2*i+1];
+                x_correct=xy_array_3[2*i];
+                y_correct=xy_array_3[2*i+1];
+            }
+        }
 
 
         //free memory
@@ -342,10 +376,18 @@ int* largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,in
         free(h_r2l_t2b);
         free(h_l2r_b2t);
         free(h_r2l_b2t);
+        free(v_l2r_t2b);
+        free(v_r2l_t2b);
+        free(v_l2r_b2t);
+        free(v_r2l_b2t);
         free(span_array_0);
         free(span_array_1);
         free(span_array_2);
         free(span_array_3);
+        free(xy_array_0);
+        free(xy_array_1);
+        free(xy_array_2);
+        free(xy_array_3);
 
     }
     free(h_left2right);
@@ -353,4 +395,10 @@ int* largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,in
     free(v_top2bottom);
     free(v_bottom2top);
 
+    int* output = (int*)malloc(4*sizeof(int));
+    output[0]=x_correct;
+    output[1]=y_correct;
+    output[2]=w_correct;
+    output[3]=h_correct;
+    return output;
 }
