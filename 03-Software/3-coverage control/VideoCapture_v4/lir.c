@@ -127,6 +127,9 @@ int * h_vector_top2bottom(int*h_adjacency, int x, int y, int n_rows, int n_cols)
     }
     new_arr[0]=unique_count;
     hell = new_arr;
+    free(new_arr);
+    free(h_vector);
+    free(subArray);
     return hell;
 }
 
@@ -158,6 +161,9 @@ int * h_vector_bottom2top(int*h_adjacency, int x, int y, int n_rows, int n_cols)
         }
     }
     new_arr[0]=unique_count-1;
+    free(new_arr);
+    free(h_vector);
+    free(subArray);
     hell = new_arr;
     return hell;
 }
@@ -191,6 +197,9 @@ int * v_vector_left2right(int*h_adjacency, int x, int y, int n_rows, int n_cols)
         }
     }
     new_arr[0]=unique_count-1;
+    free(new_arr);
+    free(v_vector);
+    free(subArray);
     hell = new_arr;
     return hell;
 }
@@ -224,6 +233,9 @@ int * v_vector_right2left(int*h_adjacency, int x, int y, int n_rows, int n_cols)
         }
     }
     new_arr[0]=unique_count-1;
+    free(new_arr);
+    free(v_vector);
+    free(subArray);
     hell = new_arr;
     return hell;
 }
@@ -242,4 +254,103 @@ int* spans(int* h_vector, int * v_vector, int length){
     }
     return array;
     // returns 1d array of span matrix, dont forget to free memory!!!!!!!!!!!!!!!!!!!!
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////
+int* get_xy_array(int x, int y, int* span, int size_xy, int mode){
+    int* array = calloc(2 * size_xy, sizeof(int));
+    for(int i = 0; i < size_xy; i++){
+    array[2*i]=x;
+    array[2*i+1]=y;
+    }
+    if(mode == 1){
+        for(int i = 0; i < size_xy; i++){
+            array[2*i]=array[2*i]-span[2*i]+1;
+        }
+    }
+    if(mode == 2){
+        for(int i = 0; i < size_xy; i++){
+            array[2*i+1]=array[2*i+1]-span[2*i+1]+1;
+        }
+    }
+    if(mode == 3){
+        for(int i = 0; i < size_xy; i++){
+            array[2*i]=array[2*i]-span[2*i]+1;
+            array[2*i+1]=array[2*i+1]-span[2*i+1]+1;
+        }
+    }
+    return array;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+// contour taken in as contour=np.squeeze(contour[0][0]) then contour=contour.astype(np.int.32)
+int* largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,int n_contour){
+    //h_left2right, h_right2left, v_top2bottom, v_bottom2top = adjacencies
+    int* h_left2right = horizontal_adjacency_left2right(grid, n_rows, n_cols);
+    int* h_right2left = horizontal_adjacency_right2left(grid, n_rows, n_cols);
+    int* v_top2bottom = vertical_adjacency_top2bottom(grid, n_rows, n_cols);
+    int* v_bottom2top = vertical_adjacency_bottom2top(grid, n_rows, n_cols);
+    ////////////////////////////////////////////////////////////////////////////////////////
+    
+    int i, x, y;
+    for (i = 0; i < n_contour; i++){
+        //x, y = contour[idx, 0], contour[idx, 1]
+        x = contour[2*i];
+        y = contour[2*i+1];
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //h_vectors = h_vectors_all_directions(h_left2right, h_right2left, x, y)
+        //v_vectors = v_vectors_all_directions(v_top2bottom, v_bottom2top, x, y)
+        int* h_l2r_t2b = h_vector_top2bottom(h_left2right, x, y, n_rows, n_cols);//0
+        int* h_r2l_t2b = h_vector_top2bottom(h_right2left, x, y, n_rows, n_cols);//1
+        int* h_l2r_b2t = h_vector_bottom2top(h_left2right, x, y, n_rows, n_cols);//2
+        int* h_r2l_b2t = h_vector_bottom2top(h_right2left, x, y, n_rows, n_cols);//3
+
+        int* v_l2r_t2b = v_vector_top2bottom(v_top2bottom, x, y, n_rows, n_cols);//0
+        int* v_r2l_t2b = v_vector_top2bottom(v_bottom2top, x, y, n_rows, n_cols);//1
+        int* v_l2r_b2t = v_vector_bottom2top(v_top2bottom, x, y, n_rows, n_cols);//2
+        int* v_r2l_b2t = v_vector_bottom2top(v_bottom2top, x, y, n_rows, n_cols);//3
+        ////////////////////////////////////////////////////////////////////////////////////
+        //span_arrays = spans_all_directions(h_vectors, v_vectors)
+        int* span_array_0 = spans(h_l2r_t2b+1, v_l2r_t2b+1, h_l2r_t2b[0]);//0
+        int* span_array_1 = spans(h_r2l_t2b+1, v_r2l_t2b+1, h_r2l_t2b[0]);//1
+        int* span_array_2 = spans(h_l2r_b2t+1, v_l2r_b2t+1, h_l2r_b2t[0]);//2
+        int* span_array_3 = spans(h_r2l_b2t+1, v_r2l_b2t+1, h_r2l_b2t[0]);//3
+        ////////////////////////////////////////////////////////////////////////////////////
+        //xy_arrays = get_xy_arrays(x, y, span_arrays)
+        int* xy_array_0 = get_xy_array(x, y, span_array_0, h_l2r_t2b[0], 0);//0
+        int* xy_array_1 = get_xy_array(x, y, span_array_1, h_r2l_t2b[0], 1);//1
+        int* xy_array_2 = get_xy_array(x, y, span_array_2, h_l2r_b2t[0], 2);//2
+        int* xy_array_3 = get_xy_array(x, y, span_array_3, h_r2l_b2t[0], 3);//3
+        ////////////////////////////////////////////////////////////////////////////////////
+        
+
+
+
+
+
+
+        //free memory
+        free(h_l2r_t2b);
+        free(h_r2l_t2b);
+        free(h_l2r_b2t);
+        free(h_r2l_b2t);
+        free(span_array_0);
+        free(span_array_1);
+        free(span_array_2);
+        free(span_array_3);
+
+    }
+    free(h_left2right);
+    free(h_right2left);
+    free(v_top2bottom);
+    free(v_bottom2top);
+
 }
