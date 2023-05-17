@@ -56,6 +56,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 ST_serial_v2.list \
 
+OBJCOPY_HEX += \
+ST_serial_v2.hex \
+
+OBJCOPY_BIN += \
+ST_serial_v2.bin \
+
 
 # All Target
 all: main-build
@@ -64,8 +70,8 @@ all: main-build
 main-build: ST_serial_v2.elf secondary-outputs
 
 # Tool invocations
-ST_serial_v2.elf ST_serial_v2.map: $(OBJS) $(USER_OBJS) C:\Users\Pineapple\Desktop\damn_okul\EE493\GitHub_Repo\Engineering-Design\03-Software\0-Firmware\ST_serial_v2\STM32F401CCUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ST_serial_v2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Pineapple\Desktop\damn_okul\EE493\GitHub_Repo\Engineering-Design\03-Software\0-Firmware\ST_serial_v2\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ST_serial_v2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+ST_serial_v2.elf ST_serial_v2.map: $(OBJS) $(USER_OBJS) C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\ST_serial_v2\STM32F401CCUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ST_serial_v2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\isikemir\Desktop\Courses\EE493\Github_Repo\Engineering-Design\03-Software\0-Firmware\ST_serial_v2\STM32F401CCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ST_serial_v2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -79,12 +85,22 @@ ST_serial_v2.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+ST_serial_v2.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "ST_serial_v2.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+ST_serial_v2.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "ST_serial_v2.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) ST_serial_v2.elf ST_serial_v2.list ST_serial_v2.map default.size.stdout
+	-$(RM) ST_serial_v2.bin ST_serial_v2.elf ST_serial_v2.hex ST_serial_v2.list ST_serial_v2.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
