@@ -49,7 +49,7 @@
   */
 
 /* USER CODE BEGIN PRIVATE_TYPES */
-
+extern uint8_t usb_in[32];
 /* USER CODE END PRIVATE_TYPES */
 
 /**

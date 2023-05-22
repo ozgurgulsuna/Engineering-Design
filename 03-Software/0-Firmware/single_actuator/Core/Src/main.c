@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,6 +32,24 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+/* IK and FK related constant definitions */
+#define D_LOWER_TO_MAIN_POLE 	15.0071		// arms(1) in matlab code
+#define L_LOWER_POLE 			24.9199		// arms(2) in matlab code
+#define D_HIGHER_TO_MAIN_POLE 	10			// arms(3) in matlab code
+#define L_HIGHER_POLE 			28			// arms(4) in matlab code
+
+#define D_INNER_OFFSET 			0   // TO BE MEASURED AND CHANGED
+#define D_MIDDLE_OFFSET 		0	// TO BE MEASURED AND CHANGED
+#define D_OUTER_OFFSET		 	0	// TO BE MEASURED AND CHANGED
+
+#define INNER_SET_LIMIT_MAX 1000 /* WHAT SHOULD BE THE LIMITS??? */
+#define INNER_SET_LIMIT_MIN 0
+#define MIDDLE_SET_LIMIT_MAX 1000
+#define MIDDLE_SET_LIMIT_MIN 0
+#define OUTER_SET_LIMIT_MAX 1000
+#define OUTER_SET_LIMIT_MIN 0
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -41,9 +59,44 @@
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
+extern char error_code;
+uint32_t PID_freq;
+int16_t move_x = 0;
+int16_t move_y = 0;
+extern uint8_t usb_out[32];
+
+/* IK related variable definitions */
+float theta_1_ref = 0;  // related to d_middle
+// float theta_3_ref = 0;	// related to d_outer -- NOT REQUIRED
+float d_inner_ref = 0;  // d3 in matlab code
+float d_middle_ref = 0; // d1 in matlab code
+float d_outer_ref = 0;  // d2 in matlab code
+
+float X_ref = 0;
+
+/* FK related variable definitions */
+float theta_1_curr;
+// float theta_3_curr;   // NOT REQUIRED
+float d_outer_curr = 0;
+float d_middle_curr = 0;
+float d_inner_curr = 0;
+
+float X_curr = 0;
+
+/* Define and initialize the encoder and motor position variables (pulse counters) */
+extern float enc_inner_pos_cm;
+extern float enc_middle_pos_cm;
+extern float enc_outer_pos_cm;
+
+/* Position set */
+extern float mot_inner_set_pos;
+extern float mot_middle_set_pos;
+extern float mot_outer_set_pos;
+
 
 /* USER CODE END PV */
 
@@ -52,8 +105,14 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-
+void inverse_kinematics();
+void forward_kinematics();
+float inverse_cos_theorem(float a, float b, float beta);
+float forward_cos_theorem(float a, float b, float c);
+extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+extern int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t Len);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -92,14 +151,28 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM1_Init();
   MX_TIM4_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim4);
+  HAL_TIM_Base_Start_IT(&htim1);
 
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+
+  // Store the frequency of PID loop
+  PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_Delay(10000);
+	  CDC_Transmit_FS(usb_out,sizeof(usb_out));
+	  if((move_x == 0) && (move_y == -5)){
+			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -175,7 +248,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 4800;
+  htim1.Init.Period = 4799;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -236,6 +309,51 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 48000;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
   * @brief TIM4 Initialization Function
   * @param None
   * @retval None
@@ -258,7 +376,7 @@ static void MX_TIM4_Init(void)
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 48000;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
@@ -290,20 +408,35 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(ERROR_LED_GPIO_Port, ERROR_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, IN1_A_Pin|IN1_B_Pin|IN2_A_Pin|IN2_B_Pin
                           |IN3_A_Pin|IN3_B_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : ENC1_A_Pin ENC1_B_Pin ENC2_A_Pin ENC2_B_Pin
-                           ENC3_A_Pin ENC3_B_Pin */
-  GPIO_InitStruct.Pin = ENC1_A_Pin|ENC1_B_Pin|ENC2_A_Pin|ENC2_B_Pin
-                          |ENC3_A_Pin|ENC3_B_Pin;
+  /*Configure GPIO pin : ERROR_LED_Pin */
+  GPIO_InitStruct.Pin = ERROR_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(ERROR_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : ENC1_A_Pin ENC2_A_Pin ENC3_A_Pin */
+  GPIO_InitStruct.Pin = ENC1_A_Pin|ENC2_A_Pin|ENC3_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : ENC1_B_Pin ENC2_B_Pin ENC3_B_Pin */
+  GPIO_InitStruct.Pin = ENC1_B_Pin|ENC2_B_Pin|ENC3_B_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : IN1_A_Pin IN1_B_Pin IN2_A_Pin IN2_B_Pin
@@ -315,10 +448,61 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+void inverse_kinematics(){
 
+	// Determine the two angles and one length
+	d_inner_ref = sqrt(X_ref*X_ref + 20*X_ref + 1864);        // in cm
+	theta_1_ref = 2*atan( (d_inner_ref + 42)/(X_ref + 10) );  // in radians
+	// theta_3_ref = M_PI + theta_1_ref;                      // in radians -- NOT REQUIRED
+
+	// Apply the cos theorem
+	d_middle_ref = inverse_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, (theta_1_ref - M_PI_2));
+	d_outer_ref = inverse_cos_theorem(D_HIGHER_TO_MAIN_POLE, L_HIGHER_POLE, (theta_1_ref - M_PI_2));
+
+	// Determine motor position reference values (everything in cm)
+	mot_inner_set_pos = d_inner_ref - D_INNER_OFFSET;
+	mot_middle_set_pos = d_middle_ref - D_MIDDLE_OFFSET;
+	mot_outer_set_pos = d_outer_ref - D_OUTER_OFFSET;
+
+	if ((mot_inner_set_pos>INNER_SET_LIMIT_MAX) || (mot_inner_set_pos<INNER_SET_LIMIT_MIN)) error_code ='r';
+	if ((mot_middle_set_pos>MIDDLE_SET_LIMIT_MAX) || (mot_middle_set_pos<MIDDLE_SET_LIMIT_MIN)) error_code ='r';
+	if ((mot_outer_set_pos>OUTER_SET_LIMIT_MAX) || (mot_outer_set_pos<OUTER_SET_LIMIT_MIN)) error_code ='r';
+}
+
+void forward_kinematics(){
+	// Find d_middle_curr & d_inner_curr
+	d_middle_curr = enc_middle_pos_cm + D_MIDDLE_OFFSET;
+	d_inner_curr = enc_inner_pos_cm + D_INNER_OFFSET;
+
+	// Find theta_1_curr using cos theorem
+	theta_1_curr = forward_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, d_middle_curr);
+
+	// Update X_curr from the values
+	X_curr = d_inner_curr*sin(theta_1_curr) - 10;
+}
+
+float inverse_cos_theorem(float a, float b, float beta){
+	// Given a, b, and the angle beta; find the other side length of the triangle
+	return sqrt( (b*b - a*a*sin(beta)*sin(beta)) ) + a*cos(beta);
+}
+
+float forward_cos_theorem(float a, float b, float c){
+	// Given a, b, and c; find the angle between a and c, then find theta_1
+	return M_PI_2 + acos( (a*a + c*c - b*b)/(2*a*c) );
+}
 /* USER CODE END 4 */
 
 /**

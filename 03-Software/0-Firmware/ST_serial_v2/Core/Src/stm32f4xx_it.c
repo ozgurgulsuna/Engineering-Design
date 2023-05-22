@@ -47,6 +47,9 @@ extern uint16_t led_bool;
 extern uint8_t usb_out[32];
 extern uint8_t blink_led_cmd[32];
 extern uint8_t usb_in[32];
+extern uint8_t check_receive;
+uint8_t usb_temp[32];
+uint8_t empty_string[32] = "";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -210,9 +213,16 @@ void SysTick_Handler(void)
 void OTG_FS_IRQHandler(void)
 {
   /* USER CODE BEGIN OTG_FS_IRQn 0 */
-	if(led_bool == 0){
-		CDC_Receive_FS(usb_in,sizeof(usb_in));
+
+	CDC_Receive_FS(usb_temp,sizeof(usb_temp));
+
+	if(strcmp((char *)usb_temp, (char *)empty_string) != 0){
+		// Store the data in usb_in array if a non-empty message received
+		memcpy(&usb_in, &usb_temp, sizeof(usb_in));
 	}
+
+	// Clear usb_temp array
+	memset(usb_temp, 0, sizeof(usb_temp));
 
   /* USER CODE END OTG_FS_IRQn 0 */
   HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);

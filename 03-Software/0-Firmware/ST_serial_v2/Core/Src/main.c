@@ -49,6 +49,7 @@ uint16_t led_bool = 0;
 uint8_t usb_out[32] = "Hello world from USB. \n";
 uint8_t blink_led_cmd[32] = "Blink LED";
 uint8_t usb_in[32];
+uint8_t check_receive = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,7 +107,6 @@ int main(void)
 	  CDC_Transmit_FS(usb_out,sizeof(usb_out));
 	  if(strcmp((char *)blink_led_cmd, (char *)usb_in) == 0){
 	  		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	  		led_bool = 1;
 	  }
     /* USER CODE BEGIN 3 */
   }
