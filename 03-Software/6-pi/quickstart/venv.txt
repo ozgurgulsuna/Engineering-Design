@@ -1,0 +1,25 @@
+pip3 install virtualenv virtualenvwrapper
+
+nano ~/.bashrc
+
+	export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+	export WORKON_HOME=$HOME/.virtualenvs
+	export VIRTUALENVWRAPPER_VIRTUALENV=~/.local/bin/virtualenv
+	source ~/.local/bin/virtualenvwrapper.sh
+	export VIRTUALENVWRAPPER_ENV_BIN_DIR=bin
+	
+mkvirtualenv sufer
+
+deactivate
+
+rmvirtualenv sufer
+
+mkvirtualenv suffer
+
+workon suffer
+
+
+# for more suffering
+# pip3 install largestinteriorrectangle
+
+https://raspberrypi-guide.github.io/programming/create-python-virtual-environment
