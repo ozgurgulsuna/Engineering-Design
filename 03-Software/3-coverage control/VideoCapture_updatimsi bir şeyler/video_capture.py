@@ -26,7 +26,7 @@ def rescaleFrame(frame, scale = 0.75):
 #vid = cv2.VideoCapture(0)
 
 # IP Webcam app (Play Store)
-vid = cv2.VideoCapture('http://192.168.137.206:8080/video')
+vid = cv2.VideoCapture(0)
 
 
 # first, second and base images to compare, in case no pictures is taken for comparison
@@ -38,7 +38,7 @@ second = first
 
 i = 0               # only for saving images
 ########################################################################################################
-first=background.background()#### check the directory <------------------------------------------------
+#first=background.background()#### check the directory <------------------------------------------------
 
 while(True):
     # Capture the video frame by frame
