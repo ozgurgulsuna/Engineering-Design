@@ -21,14 +21,15 @@ def rect_detect(conts,shape):
     # if your mask is incurved or if you want better results, 
     # you may want to use cv2.CHAIN_APPROX_NONE instead of cv2.CHAIN_APPROX_SIMPLE, 
     # but the rectangle search will be longer
-    recto=[]
+    #recto=[]
     blank=np.zeros(shape,dtype="uint8")
     for x in conts:
         mask = np.zeros(shape, dtype='uint8')
         contour = np.squeeze(x[0][:, 0, :])
         n_contour = len(contour)
+        print(n_contour)
 
-        #print(contour)
+        print(contour)
         cv.drawContours(mask, x, -1, 255, -1)
         grid=mask>0
         #cv.imshow("mask(grid)", (grid*255).astype("uint8"))
@@ -45,11 +46,11 @@ def rect_detect(conts,shape):
         rect=np.array([0,0,0,0],dtype=np.int32)
         rc=rect.ctypes.data_as(POINTER(c_int))
         a=lib.largest_interior_rectangle(gr, cont, n_rows, n_cols,n_contour,rc)
-
+        print(a)
 
 
         cv.rectangle(blank,(rect[0],rect[1]),(rect[2]+rect[0],rect[3]+rect[1]),255,-1)
-        recto.append([rect])
+        #recto.append([rect])
 
     #cv.imshow("hey", blank)
     end = time.time()

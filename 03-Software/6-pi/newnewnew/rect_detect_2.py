@@ -11,7 +11,7 @@ lib.largest_interior_rectangle.restype = (c_int)
 lib.largest_interior_rectangle.argtypes = [POINTER(c_int),POINTER(c_int), c_int, c_int, c_int,POINTER(c_int)]
 
 
-def rect_detect(conts,shape,queue):
+def rect_detect(conts,shape):
     start = time.time()
     # Import your picture
     # Color it in gray
@@ -24,12 +24,15 @@ def rect_detect(conts,shape,queue):
     recto=[]
     blank=np.zeros(shape,dtype="uint8")
     for x in conts:
+        print(x)
         mask = np.zeros(shape, dtype='uint8')
-        contour = np.squeeze(x[0][:, 0, :])
+        
+        contour = np.squeeze(x[0])
+        print(contour)
         n_contour = len(contour)
 
         #print(contour)
-        cv.drawContours(mask, x, -1, 255, -1)
+        cv.drawContours(mask, x[0], -1, 255, -1)
         grid=mask>0
         #cv.imshow("mask(grid)", (grid*255).astype("uint8"))
         contour = contour.astype("uint32", order="C")
@@ -55,7 +58,7 @@ def rect_detect(conts,shape,queue):
     end = time.time()
     print(end - start)
     #cv.waitKey(0)
-    #return blank,rect
-    queue.put([blank, rect])
+    return blank,rect
+    #queue.put([blank, rect])
 
 

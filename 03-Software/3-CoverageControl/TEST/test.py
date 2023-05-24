@@ -15,7 +15,7 @@ def rescaleFrame(frame, scale = 0.75):
 # define a video capture object
 
 # 0 : webcam, to find other cameras, change the number
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 #cap.set(cv2.CAP_PROP_FRAME_WIDTH,1280)
 #cap.set(cv2.CAP_PROP_FRAME_HEIGHT,720)
 
@@ -52,7 +52,7 @@ while(True):
     elif pressed == ord('z'):
         __, cal = cap.read()
         cal= cv2.rotate(cal, cv2.ROTATE_180)
-        cv2.imwrite('/home/pi/Desktop/madness/Cali/calibration{}.jpeg'.format(i), cal)
+        cv2.imwrite('/home/sundance/Desktop/calibration{}.jpeg'.format(i), cal)
         i = i + 1
 cap.release()
 cv2.destroyAllWindows()

@@ -17,8 +17,15 @@ def background(cap,cap_r):
         if (i == 9):
             break
 
-        
-    # cap = cv2.VideoCapture(0)
+        # determine pressed key, used for test purposes
+        pressed = cv2.waitKey(1) & 0xFF
+
+        # to stop video stream, press "q"
+        if (pressed == ord('q')):
+            cv2.destroyAllWindows()
+            break
+            return
+        # cap = cv2.VideoCapture(0)
 
     ##############################################
     # get the path/directory

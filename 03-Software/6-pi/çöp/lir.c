@@ -136,11 +136,13 @@ int * h_vector_top2bottom(int*h_adjacency, int x, int y, int n_rows, int n_cols)
 
 //////////////////////////////////////////////////////////////////////////////////////
 int * h_vector_bottom2top(int*h_adjacency, int x, int y, int n_rows, int n_cols){
-    int* subArray=calloc(n_rows-y, sizeof(int));
+    int* subArray=calloc(y+1, sizeof(int));
     for (int i = y; i >= 0; i--)
     {
         subArray[y-i] = *(h_adjacency + i * n_cols + x);
+    	
     }
+    
     int vector_size = predict_vector_size(subArray,n_rows-y);
     int* h_vector = calloc(vector_size, sizeof(int));
 
@@ -311,13 +313,17 @@ int largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,int
         //x, y = contour[idx, 0], contour[idx, 1]
         x = contour[2*i];
         y = contour[2*i+1];
-
+	
         ////////////////////////////////////////////////////////////////////////////////////
         //h_vectors = h_vectors_all_directions(h_left2right, h_right2left, x, y)
         //v_vectors = v_vectors_all_directions(v_top2bottom, v_bottom2top, x, y)
         int* h_l2r_t2b = h_vector_top2bottom(h_left2right, x, y, n_rows, n_cols);//0
+        
+        
         int* h_r2l_t2b = h_vector_top2bottom(h_right2left, x, y, n_rows, n_cols);//1
+        
         int* h_l2r_b2t = h_vector_bottom2top(h_left2right, x, y, n_rows, n_cols);//2
+        return x;
         int* h_r2l_b2t = h_vector_bottom2top(h_right2left, x, y, n_rows, n_cols);//3
 	
         int* v_l2r_t2b = v_vector_left2right(v_top2bottom, x, y, n_rows, n_cols);//0

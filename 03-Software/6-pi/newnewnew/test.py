@@ -7,7 +7,7 @@ import cv2 as cv
 import per_dir_2
 import img_compare
 import perspective_2
-import rect_detect as rect_detect
+import rect_detect_2 as rect_detect
 import background
 # not essential visualization functions
 import visualization as vs
@@ -16,7 +16,7 @@ import multiprocessing
 import time
 
 # define a video capture object
-vid = cv.VideoCapture(1)                                                # 0 : webcam, to find other cameras, change the number
+vid = cv.VideoCapture(0)                                                # 0 : webcam, to find other cameras, change the number
 vid_r=cv.VideoCapture(2)                                                # 1 : reversed x y axis cam
 _, frame = vid.read()
 # background image is added to the system, image is determined in advance during calibration
