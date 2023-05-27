@@ -12,7 +12,7 @@ lib.largest_interior_rectangle.argtypes = [POINTER(c_int),POINTER(c_int), c_int,
 
 
 def rect_detect(conts,shape):
-    start = time.time()
+    #start = time.time()
     # Import your picture
     # Color it in gray
 
@@ -48,15 +48,15 @@ def rect_detect(conts,shape):
         #print("entered c")
         a=lib.largest_interior_rectangle(gr, cont, n_rows, n_cols,n_contour,rc)
         #print("returned from c: ",a)
-
+        
 
         cv.rectangle(blank,(rect[0],rect[1]),(rect[2]+rect[0],rect[3]+rect[1]),255,-1)
         recto.append([rect])
 
     #cv.imshow("hey", blank)
-    end = time.time()
-    print(end - start)
+    #end = time.time()
+    #print(end - start)
     #cv.waitKey(0)
     return blank,rect
-
+    #queue.put([blank,rect])
 

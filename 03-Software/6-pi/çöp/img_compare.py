@@ -15,7 +15,8 @@ def img_compare(first,second):
     #
     #diff=(first-second)
     diff=cv.absdiff(first,second)
-    #cv.imshow("diff",diff)
+    cv.imshow("diff",diff)
+    cv.waitKey(0)
     #// inorder to perform the absdiff, the images need to be of equal size
     #// NOTE: I believe this is the reason why you have a big blue box on the edges
     #// as well of the output image. This can be fixed by using two equal images in the first place
@@ -29,11 +30,11 @@ def img_compare(first,second):
     #print(len(contours))
     con_real=[]
     hey=np.ones(first.shape, dtype='uint8')*255
-    cv.drawContours(hey,[contours[0]],-1,0,-1)
+    cv.drawContours(hey,contours,-1,0,-1)
     #cv.drawContours(hey,contours[1],-1,0,-1)
     #cv.drawContours(hey,contours[2],-1,0,-1)
-    #cv.imshow("hey",hey)
-    #cv.waitKey(0)
+    cv.imshow("hey",hey)
+    cv.waitKey(0)
     for cont in contours:
         mask = np.zeros(second.shape,np.uint8)
         cv.drawContours(mask,[cont],0,255,-1)

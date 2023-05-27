@@ -2,7 +2,7 @@
 
 # import opencv library
 import cv2 as cv
-
+import cv2
 # main functions
 import per_dir_2
 import img_compare
@@ -14,10 +14,32 @@ import visualization as vs
 import multiprocessing
 # necessary to add delays to the system
 import time
+import threading
+
+def camera_thread():
+        global cam_result_1
+        while(1):
+                _, cam_result_1 = vid.read()
+                cv.imshow('Live Video', frame)
+                cv.waitKey(1)
+def camera_thread_r():
+        global cam_result_2
+        while(1):
+                _, cam_result_2 = vid_r.read()
+
+
+
+
 
 # define a video capture object
-vid = cv.VideoCapture(1)                                                # 0 : webcam, to find other cameras, change the number
-vid_r=cv.VideoCapture(4)                                                # 1 : reversed x y axis cam
+vid = cv.VideoCapture(0) 
+vid.set(cv2.CAP_PROP_SHARPNESS,15)
+vid.set(cv2.CAP_PROP_BRIGHTNESS,0)
+vid.set(cv2.CAP_PROP_SATURATION,37)                                               # 0 : webcam, to find other cameras, change the number
+vid_r=cv.VideoCapture(2)                                                # 1 : reversed x y axis cam
+vid_r.set(cv2.CAP_PROP_SHARPNESS,15)
+vid_r.set(cv2.CAP_PROP_BRIGHTNESS,0)
+vid_r.set(cv2.CAP_PROP_SATURATION,37)
 _, frame = vid.read()
 # background image is added to the system, image is determined in advance during calibration
 
@@ -32,12 +54,15 @@ time.sleep(1)
 i = 1
 flag=0
 # repeat the same operation steps until the operation is terminated
+threading.Thread(target=camera_thread).start()
+threading.Thread(target=camera_thread_r).start()
+time.sleep(1)
 while(1):
     # to see the video, not essential for operation
     # Capture the video frame by frame
-    _, frame = vid.read()
+    frame = cam_result_1
     # Display the resulting frame
-    cv.imshow('Live Video', frame)
+    
     
     # determine pressed key, used for test purposes
     pressed = cv.waitKey(1) & 0xFF
@@ -54,15 +79,16 @@ while(1):
         if (pressed == ord('q')):
             cv.destroyAllWindows()
             flag = 1
+            i=i+1
             break
         start = time.time()
-        _, frame = vid.read()
+        frame = cam_result_1
         # Display the resulting frame
-        cv.imshow('Live Video', frame)
+        #cv.imshow('Live Video', frame)
         
         # Capture a frame
-        ret, image = vid.read()
-        _, image_r = vid_r.read()
+        image = cam_result_1
+        image_r = cam_result_2
         # convert image to gray scale
         image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         image_r = cv.cvtColor(image_r, cv.COLOR_BGR2GRAY)
@@ -72,8 +98,15 @@ while(1):
         #cv.imshow('Image to process', image)
 
         # compare image with background image
-        cont, cont_img = img_compare.img_compare(background_image, image)
-        cont_r, cont_img_r = img_compare.img_compare(background_image_r, image_r)
+        try:
+                cont, cont_img = img_compare.img_compare(background_image, image)
+                cont_r, cont_img_r = img_compare.img_compare(background_image_r, image_r)
+        except:
+               continue
+        cv.imshow("back",background_image)
+        cv.imshow("img",image)
+        cv.imshow("out",cont_img)
+        cv.waitKey(1)
         #print("cont: ",cont)
         """
         queue1 = multiprocessing.Queue()
@@ -86,7 +119,8 @@ while(1):
         process1.join()
         process2.join()
         cont, cont_img = queue1.get()
-        cont_r, cont_img_r = queue2.get()"""
+        cont_r, cont_img_r = queue2.get()
+        """
         #print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
 
         #perspective_img = cv.cvtColor(perspective_img, cv.COLOR_BGR2GRAY)
@@ -102,17 +136,18 @@ while(1):
         #print("Rect2")
         rect_img_r, rect_points_r = rect_detect.rect_detect(cont_r,cont_img_r.shape)
         """
-        process3 =multiprocessing.Process(target=rect_detect.rect_detect, args=([cont],cont_img.shape,queue1))
-        process4 =multiprocessing.Process(target=rect_detect.rect_detect, args=([cont_r],cont_img_r.shape,queue2))
+        process3 =multiprocessing.Process(target=rect_detect.rect_detect, args=(cont,cont_img.shape,queue1))
+        process4 =multiprocessing.Process(target=rect_detect.rect_detect, args=(cont_r,cont_img_r.shape,queue2))
         process3.start()
         process4.start()
         process3.join()
         process4.join()
         rect_img, rect_points = queue1.get()
-        rect_img_r, rect_points_r = queue2.get()"""
+        rect_img_r, rect_points_r = queue2.get()
+        """
 
-
-        cv.imshow('Detected Largest Interior Rectangle', rect_img)
+        #cv.imshow('Detected Largest Interior Rectangle', rect_img)
+        #cv.waitKey(0)
         per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r)
 
             
