@@ -526,18 +526,19 @@ void OTG_FS_IRQHandler(void)
 			// Since STM32 byte size is 16 bits, there isn't a real uint8_t type
 			// We manually do big endian storage, and manually decode them below here
 
-			int16_t mot_inner_move = usb_in[1]*256 + usb_in[2];
-			int16_t mot_middle_move = usb_in[3]*256 + usb_in[4];
-			int16_t mot_outer_move = usb_in[5]*256 + usb_in[6];
+			int16_t mot_inner_move_mm = usb_in[1]*256 + usb_in[2];
+			int16_t mot_middle_move_mm = usb_in[3]*256 + usb_in[4];
+			int16_t mot_outer_move_mm = usb_in[5]*256 + usb_in[6];
 
-			if(mot_inner_move < 5){
-				mot_inner_set_pos = mot_inner_set_pos + mot_inner_move;
+			// Limit initializing movements to 5 cm
+			if(abs(mot_inner_move_mm) < 50){
+				mot_inner_set_pos = mot_inner_set_pos + (float)mot_inner_move_mm/10;
 			}
-			if(mot_middle_move < 5){
-				mot_middle_set_pos = mot_middle_set_pos + mot_middle_move;
+			if(abs(mot_middle_move_mm) < 50){
+				mot_middle_set_pos = mot_middle_set_pos + (float)mot_middle_move_mm/10;
 			}
-			if(mot_outer_move < 5){
-				mot_outer_set_pos = mot_outer_set_pos + mot_outer_move;
+			if(abs(mot_outer_move_mm) < 50){
+				mot_outer_set_pos = mot_outer_set_pos + (float)mot_outer_move_mm/10;
 			}
 		}
 
