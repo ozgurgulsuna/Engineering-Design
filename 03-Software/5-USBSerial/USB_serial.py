@@ -5,7 +5,11 @@ from serial.tools import list_ports
 
 def main():
     print("Hello World!")
-    ser = serial.Serial('COM7') # open serial port
+    # Device IDs are mapped as:
+    #   ST-right
+    #   ST-middle
+    #   ST-left
+    ser = serial.Serial('/dev/ST-right') # open serial port
     print(ser.name)             # check which port was really used
 
     while True:

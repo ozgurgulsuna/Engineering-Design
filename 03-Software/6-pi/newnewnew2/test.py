@@ -32,11 +32,11 @@ def camera_thread_r():
 
 
 # define a video capture object
-vid = cv.VideoCapture(0) 
+vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.3:1.0-video-index0") 
 vid.set(cv2.CAP_PROP_SHARPNESS,15)
 vid.set(cv2.CAP_PROP_BRIGHTNESS,0)
 vid.set(cv2.CAP_PROP_SATURATION,37)                                               # 0 : webcam, to find other cameras, change the number
-vid_r=cv.VideoCapture(2)                                                # 1 : reversed x y axis cam
+vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
 vid_r.set(cv2.CAP_PROP_SHARPNESS,15)
 vid_r.set(cv2.CAP_PROP_BRIGHTNESS,0)
 vid_r.set(cv2.CAP_PROP_SATURATION,37)
