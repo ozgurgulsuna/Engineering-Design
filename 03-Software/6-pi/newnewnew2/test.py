@@ -48,6 +48,23 @@ _, frame = vid.read()
 background_image,background_image_r = background.background(vid,vid_r)  #button=2
 background_image = cv.cvtColor(background_image, cv.COLOR_BGR2GRAY)
 background_image_r = cv.cvtColor(background_image_r, cv.COLOR_BGR2GRAY)
+
+# add pole masks before perspective correction####################################################
+# fixed pole
+cv.rectangle(background_image,[245,0],[270,140],255,-1)
+# bottom of movable pole
+cv.rectangle(background_image,[270,75],[340,140],255,-1)
+# slave pole can also be eliminated
+
+# fixed pole
+cv.rectangle(background_image_r,[245,0],[270,140],255,-1)
+# bottom of movable pole
+cv.rectangle(background_image_r,[270,75],[340,140],255,-1)
+# slave pole can also be eliminated
+
+##################################################################################################
+
+
 background_image = perspective_2.perspective_2(background_image)
 background_image_r = perspective_2.perspective_2(background_image_r)
 time.sleep(1)
