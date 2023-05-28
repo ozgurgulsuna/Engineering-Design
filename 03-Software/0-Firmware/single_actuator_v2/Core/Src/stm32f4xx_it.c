@@ -61,19 +61,19 @@ uint8_t external_shutdown = 0;
 uint8_t ack_to_be_sent = 0;
 uint8_t steady_state_counter = 0;
 
-#define	BUF_SIZE	32
+#define	BUF_SIZE	8
 
 uint16_t i;
 uint16_t led_bool;
-uint8_t usb_out[BUF_SIZE] = "Hello world from USB. \n";
+uint8_t usb_out[BUF_SIZE] = "Hello\n";
 uint8_t blink_led_cmd[BUF_SIZE];
 uint8_t usb_in[BUF_SIZE];
 uint8_t check_receive;
 uint8_t usb_temp[BUF_SIZE];
 
-uint8_t empty_string[32] = "";
-uint8_t acknowledge_message[32] = "a";
-uint8_t error_message[32] = "e";
+uint8_t empty_string[BUF_SIZE] = "";
+uint8_t acknowledge_message[BUF_SIZE] = "a\n";
+uint8_t error_message[BUF_SIZE] = "e\n";
 
 /* Define and initialize the encoder and motor position variables (pulse counters) */
 int enc_inner_pos = 0;
@@ -493,6 +493,9 @@ void OTG_FS_IRQHandler(void)
 	CDC_Receive_FS(usb_temp,sizeof(usb_temp));
 
 	if(strcmp((char *)usb_temp, (char *)empty_string) != 0){
+		// Toggle the LED to indicate that message is received
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
 		// Store the data in usb_in array if a non-empty message received
 		memcpy(&usb_in, &usb_temp, sizeof(usb_in));
 
@@ -544,6 +547,22 @@ void OTG_FS_IRQHandler(void)
 
 		if(usb_in[0] == 'o'){
 			// TURN OFF CODE TO BE ADDED
+		}
+
+		if(usb_in[0] == 'b'){
+			// Finish initializing and begin the main process by reseting
+			// motor positions and set values
+			mot_inner_set_pos = 0;
+			mot_middle_set_pos = 0;
+			mot_outer_set_pos = 0;
+			enc_inner_pos_cm = 0;
+			enc_middle_pos_cm = 0;
+			enc_outer_pos_cm = 0;
+			enc_inner_pos = 0;
+			enc_middle_pos = 0;
+			enc_outer_pos = 0;
+			X_ref = 0;
+			X_curr = 0;
 		}
 
 	}

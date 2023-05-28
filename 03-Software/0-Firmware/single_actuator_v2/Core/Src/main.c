@@ -36,19 +36,21 @@
 /* IK and FK related constant definitions */
 #define D_LOWER_TO_MAIN_POLE 	15.0071		// arms(1) in matlab code
 #define L_LOWER_POLE 			24.9199		// arms(2) in matlab code
-#define D_HIGHER_TO_MAIN_POLE 	10			// arms(3) in matlab code
+#define D_HIGHER_TO_MAIN_POLE 	20			// arms(3) in matlab code
 #define L_HIGHER_POLE 			28			// arms(4) in matlab code
 
 #define D_INNER_OFFSET 			0   // TO BE MEASURED AND CHANGED
 #define D_MIDDLE_OFFSET 		0	// TO BE MEASURED AND CHANGED
 #define D_OUTER_OFFSET		 	0	// TO BE MEASURED AND CHANGED
 
-#define INNER_SET_LIMIT_MAX 1000 /* WHAT SHOULD BE THE LIMITS??? */
+#define INNER_SET_LIMIT_MAX 30 /* WHAT SHOULD BE THE LIMITS??? */
 #define INNER_SET_LIMIT_MIN 0
-#define MIDDLE_SET_LIMIT_MAX 1000
+#define MIDDLE_SET_LIMIT_MAX 30
 #define MIDDLE_SET_LIMIT_MIN 0
-#define OUTER_SET_LIMIT_MAX 1000
+#define OUTER_SET_LIMIT_MAX 30
 #define OUTER_SET_LIMIT_MIN 0
+
+#define	BUF_SIZE	8
 
 /* USER CODE END PD */
 
@@ -67,7 +69,7 @@ extern char error_code;
 uint32_t PID_freq;
 int16_t move_x = 0;
 int16_t move_y = 0;
-extern uint8_t usb_out[32];
+extern uint8_t usb_out[BUF_SIZE];
 
 /* IK related variable definitions */
 float theta_1_ref = 0;  // related to d_middle
@@ -168,11 +170,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_Delay(10000);
-	  CDC_Transmit_FS(usb_out,sizeof(usb_out));
-	  if((move_x == 0) && (move_y == -5)){
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
