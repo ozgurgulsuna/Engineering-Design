@@ -35,6 +35,8 @@
 #define MOTOR_SET_LIMIT_MAX 1000 /* WHAT SHOULD BE THE LIMITS??? */
 #define MOTOR_SET_LIMIT_MIN 0
 
+
+#define	BUF_SIZE	8
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -129,11 +131,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_Delay(10000);
-	  CDC_Transmit_FS(usb_out,sizeof(usb_out));
-	  if((move_x == 0) && (move_y == -5)){
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

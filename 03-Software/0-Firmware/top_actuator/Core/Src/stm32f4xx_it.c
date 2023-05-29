@@ -35,6 +35,7 @@
 #define GEAR_RATIO	40
 #define DUTY_PERCENTAGE_LIMIT 	0.95
 
+#define	BUF_SIZE	8
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,19 +55,17 @@ uint8_t external_shutdown = 0;
 uint8_t ack_to_be_sent = 0;
 uint8_t steady_state_counter = 0;
 
-#define	BUF_SIZE	32
-
 uint16_t i;
 uint16_t led_bool;
-uint8_t usb_out[BUF_SIZE] = "Hello world from USB. \n";
+uint8_t usb_out[BUF_SIZE] = "Hello\n";
 uint8_t blink_led_cmd[BUF_SIZE];
 uint8_t usb_in[BUF_SIZE];
 uint8_t check_receive;
 uint8_t usb_temp[BUF_SIZE];
 
-uint8_t empty_string[32] = "";
-uint8_t acknowledge_message[32] = "a";
-uint8_t error_message[32] = "e";
+uint8_t empty_string[BUF_SIZE] = "";
+uint8_t acknowledge_message[BUF_SIZE] = "a\n";
+uint8_t error_message[BUF_SIZE] = "e\n";
 
 /* Define and initialize the encoder and motor position variables (pulse counters) */
 int enc1_pos = 0;
@@ -403,6 +402,8 @@ void OTG_FS_IRQHandler(void)
 	CDC_Receive_FS(usb_temp,sizeof(usb_temp));
 
 	if(strcmp((char *)usb_temp, (char *)empty_string) != 0){
+		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
 		// Store the data in usb_in array if a non-empty message received
 		memcpy(&usb_in, &usb_temp, sizeof(usb_in));
 
@@ -422,7 +423,7 @@ void OTG_FS_IRQHandler(void)
 			CDC_Transmit_FS(usb_in,sizeof(usb_in));
 			*/
 
-			Y_ref = Y_curr + move_y;
+			Y_ref = Y_curr + (float)move_y/10;
 
 			ack_to_be_sent = 1;
 
@@ -454,6 +455,10 @@ void OTG_FS_IRQHandler(void)
 
 		if(usb_in[0] == 'o'){
 			// TURN OFF CODE TO BE ADDED
+		}
+
+		if(usb_in[0] == 'b'){
+			// BEGIN COMMAND
 		}
 
 	}

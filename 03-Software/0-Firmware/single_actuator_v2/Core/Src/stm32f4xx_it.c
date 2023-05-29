@@ -40,6 +40,7 @@
 #define MOTOR_SPEED_ESTIMATE	2	// (cm per second)
 #define INTERPOLATION_INTERVAL	0.5 // (0.5 cm per interval)
 
+#define	BUF_SIZE	8
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -61,7 +62,6 @@ uint8_t external_shutdown = 0;
 uint8_t ack_to_be_sent = 0;
 uint8_t steady_state_counter = 0;
 
-#define	BUF_SIZE	8
 
 uint16_t i;
 uint16_t led_bool;
@@ -515,7 +515,7 @@ void OTG_FS_IRQHandler(void)
 			CDC_Transmit_FS(usb_in,sizeof(usb_in));
 			*/
 
-			X_ref = X_curr + move_x;
+			X_ref = X_curr + (float)move_x/10;
 
 			ack_to_be_sent = 1;
 

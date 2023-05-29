@@ -36,7 +36,7 @@
 /* IK and FK related constant definitions */
 #define D_LOWER_TO_MAIN_POLE 	15.0071		// arms(1) in matlab code
 #define L_LOWER_POLE 			24.9199		// arms(2) in matlab code
-#define D_HIGHER_TO_MAIN_POLE 	10			// arms(3) in matlab code
+#define D_HIGHER_TO_MAIN_POLE 	20			// arms(3) in matlab code
 #define L_HIGHER_POLE 			28			// arms(4) in matlab code
 
 #define D_INNER_OFFSET 			0   // TO BE MEASURED AND CHANGED
@@ -50,6 +50,7 @@
 #define OUTER_SET_LIMIT_MAX 1000
 #define OUTER_SET_LIMIT_MIN 0
 
+#define	BUF_SIZE	8
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -168,11 +169,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_Delay(10000);
-	  CDC_Transmit_FS(usb_out,sizeof(usb_out));
-	  if((move_x == 0) && (move_y == -5)){
-			HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
