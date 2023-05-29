@@ -31,9 +31,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define INNER_GEAR_RATIO 40
-#define MIDDLE_GEAR_RATIO 40*5
-#define OUTER_GEAR_RATIO 40
+#define INNER_GEAR_RATIO 80
+#define MIDDLE_GEAR_RATIO 80*5
+#define OUTER_GEAR_RATIO 80
 #define DUTY_PERCENTAGE_LIMIT 0.95
 
 #define	BUF_SIZE	8

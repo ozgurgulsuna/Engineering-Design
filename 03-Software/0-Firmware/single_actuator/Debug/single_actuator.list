@@ -1979,8 +1979,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
  8001358:	f44f 1388 	mov.w	r3, #1114112	; 0x110000
  800135c:	61bb      	str	r3, [r7, #24]
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
- 800135e:	2301      	movs	r3, #1
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 800135e:	2300      	movs	r3, #0
  8001360:	61fb      	str	r3, [r7, #28]
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
  8001362:	f107 0314 	add.w	r3, r7, #20
@@ -1995,8 +1995,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
  8001372:	2300      	movs	r3, #0
  8001374:	61bb      	str	r3, [r7, #24]
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
- 8001376:	2301      	movs	r3, #1
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 8001376:	2300      	movs	r3, #0
  8001378:	61fb      	str	r3, [r7, #28]
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
  800137a:	f107 0314 	add.w	r3, r7, #20
@@ -2832,7 +2832,7 @@ void EXTI0_IRQHandler(void)
  800190a:	bd80      	pop	{r7, pc}
  800190c:	40020000 	.word	0x40020000
  8001910:	200002b8 	.word	0x200002b8
- 8001914:	42200000 	.word	0x42200000
+ 8001914:	42a00000 	.word	0x42a00000
  8001918:	200002c4 	.word	0x200002c4
 
 0800191c <EXTI2_IRQHandler>:
@@ -2890,7 +2890,7 @@ void EXTI2_IRQHandler(void)
  8001966:	bd80      	pop	{r7, pc}
  8001968:	40020000 	.word	0x40020000
  800196c:	200002bc 	.word	0x200002bc
- 8001970:	43480000 	.word	0x43480000
+ 8001970:	43c80000 	.word	0x43c80000
  8001974:	200002c8 	.word	0x200002c8
 
 08001978 <EXTI4_IRQHandler>:
@@ -2948,7 +2948,7 @@ void EXTI4_IRQHandler(void)
  80019c2:	bd80      	pop	{r7, pc}
  80019c4:	40020000 	.word	0x40020000
  80019c8:	200002c0 	.word	0x200002c0
- 80019cc:	42200000 	.word	0x42200000
+ 80019cc:	42a00000 	.word	0x42a00000
  80019d0:	200002cc 	.word	0x200002cc
 
 080019d4 <TIM3_IRQHandler>:
