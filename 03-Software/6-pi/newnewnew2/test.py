@@ -2,16 +2,13 @@
 
 # import opencv library
 import cv2 as cv
-import cv2
 # main functions
 import per_dir_2
 import img_compare
 import perspective_2
 import rect_detect_2 as rect_detect
 import background
-# not essential visualization functions
-import visualization as vs
-import multiprocessing
+
 # necessary to add delays to the system
 import time
 import threading
@@ -28,18 +25,15 @@ def camera_thread_r():
                 _, cam_result_2 = vid_r.read()
 
 
-
-
-
 # define a video capture object
 vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.3:1.0-video-index0") 
-vid.set(cv2.CAP_PROP_SHARPNESS,15)
-vid.set(cv2.CAP_PROP_BRIGHTNESS,0)
-vid.set(cv2.CAP_PROP_SATURATION,37)                                               # 0 : webcam, to find other cameras, change the number
+vid.set(cv.CAP_PROP_SHARPNESS,15)
+vid.set(cv.CAP_PROP_BRIGHTNESS,0)
+vid.set(cv.CAP_PROP_SATURATION,37)                                               # 0 : webcam, to find other cameras, change the number
 vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
-vid_r.set(cv2.CAP_PROP_SHARPNESS,15)
-vid_r.set(cv2.CAP_PROP_BRIGHTNESS,0)
-vid_r.set(cv2.CAP_PROP_SATURATION,37)
+vid_r.set(cv.CAP_PROP_SHARPNESS,15)
+vid_r.set(cv.CAP_PROP_BRIGHTNESS,0)
+vid_r.set(cv.CAP_PROP_SATURATION,37)
 _, frame = vid.read()
 # background image is added to the system, image is determined in advance during calibration
 
