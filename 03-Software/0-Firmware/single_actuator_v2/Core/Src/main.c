@@ -43,12 +43,12 @@
 #define D_MIDDLE_OFFSET 		0	// TO BE MEASURED AND CHANGED
 #define D_OUTER_OFFSET		 	0	// TO BE MEASURED AND CHANGED
 
-#define INNER_SET_LIMIT_MAX 30 /* WHAT SHOULD BE THE LIMITS??? */
-#define INNER_SET_LIMIT_MIN 0
-#define MIDDLE_SET_LIMIT_MAX 30
-#define MIDDLE_SET_LIMIT_MIN 0
-#define OUTER_SET_LIMIT_MAX 30
-#define OUTER_SET_LIMIT_MIN 0
+#define INNER_SET_LIMIT_MAX 10 /* WHAT SHOULD BE THE LIMITS??? */
+#define INNER_SET_LIMIT_MIN -10
+#define MIDDLE_SET_LIMIT_MAX 10
+#define MIDDLE_SET_LIMIT_MIN -10
+#define OUTER_SET_LIMIT_MAX 10
+#define OUTER_SET_LIMIT_MIN -10
 
 #define	BUF_SIZE	8
 
@@ -99,6 +99,7 @@ extern float mot_inner_set_pos;
 extern float mot_middle_set_pos;
 extern float mot_outer_set_pos;
 
+extern char error_message[BUF_SIZE];
 
 /* USER CODE END PV */
 
@@ -155,6 +156,9 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  // Store the frequency of PID loop
+  PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
+
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim1);
 
@@ -162,8 +166,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
 
-  // Store the frequency of PID loop
-  PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -514,6 +517,9 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  // EYVAH
+	  memcpy(&usb_out, &error_message, sizeof(usb_out));
+	  CDC_Transmit_FS(usb_out, sizeof(usb_out));
   }
   /* USER CODE END Error_Handler_Debug */
 }

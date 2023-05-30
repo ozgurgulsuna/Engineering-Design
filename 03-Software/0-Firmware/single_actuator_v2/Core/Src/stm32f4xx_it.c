@@ -40,7 +40,8 @@
 #define MOTOR_SPEED_ESTIMATE	2	// (cm per second)
 #define INTERPOLATION_INTERVAL	0.5 // (0.5 cm per interval)
 
-#define	BUF_SIZE	8
+#define	BUF_SIZE	 	8
+#define ANTI_WIND_UP 	40
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -400,6 +401,18 @@ void TIM4_IRQHandler(void)
 	middle_int_error+=middle_pos_error/PID_freq;
 	outer_int_error+=outer_pos_error/PID_freq;
 
+	if (inner_int_error>=ANTI_WIND_UP) inner_int_error=ANTI_WIND_UP;
+	if (middle_int_error>=ANTI_WIND_UP) middle_int_error=ANTI_WIND_UP;
+	if (outer_int_error>=ANTI_WIND_UP) outer_int_error=ANTI_WIND_UP;
+
+	if (inner_int_error<=-ANTI_WIND_UP) inner_int_error=-ANTI_WIND_UP;
+	if (middle_int_error<=-ANTI_WIND_UP) middle_int_error=-ANTI_WIND_UP;
+	if (outer_int_error<=-ANTI_WIND_UP) outer_int_error=-ANTI_WIND_UP;
+
+	if (((inner_pos_error>0) && (inner_int_error<0))||((inner_pos_error<0) && (inner_int_error>0))) inner_int_error=0;
+	if (((middle_pos_error>0) && (middle_int_error<0))||((middle_pos_error<0) && (middle_int_error>0))) middle_int_error=0;
+	if (((outer_pos_error>0) && (outer_int_error<0))||((outer_pos_error<0) && (outer_int_error>0))) outer_int_error=0;
+
 	pre_inner_pos_error=inner_pos_error;
 	pre_middle_pos_error=middle_pos_error;
 	pre_outer_pos_error=outer_pos_error;
@@ -409,33 +422,33 @@ void TIM4_IRQHandler(void)
 	duty_middle = (int)(kp_middle*middle_pos_error+kd_middle*middle_der_error+ki_middle*middle_int_error);
 	duty_outer = (int)(kp_outer*outer_pos_error+kd_outer*outer_der_error+ki_outer*outer_int_error);
 
-	/* Set the direction */
+	/* Set the direction (MOTOR CONNECTIONS REVERSED!!!) */
 	if(duty_inner > 0){
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
 	}
 	else{
 			duty_inner = -duty_inner;
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
 	}
 	if(duty_middle > 0){
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
 	}
 	else{
 			duty_middle = -duty_middle;
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
 	}
 	if(duty_outer > 0){
-			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, HIGH);
 	}
 	else{
 			duty_outer = -duty_outer;
-			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, HIGH);
 	}
 
 	/* Limit the duty */
@@ -453,8 +466,8 @@ void TIM4_IRQHandler(void)
 	TIM1->CCR2 = duty_middle;
 	TIM1->CCR3 = duty_outer;
 
-	// Send acknowledge if the system reaches steady state
-	if (ack_to_be_sent == 1 && inner_pos_error == 0){
+	// Send acknowledge ifj the system reaches steady state
+	if (ack_to_be_sent == 1 && fabs(inner_pos_error) <= 0.5 && fabs(middle_pos_error) <= 0.5 && fabs(outer_pos_error) <= 0.5){
 		steady_state_counter++;
 		if(steady_state_counter == 1){
 			forward_kinematics();
@@ -563,6 +576,9 @@ void OTG_FS_IRQHandler(void)
 			enc_outer_pos = 0;
 			X_ref = 0;
 			X_curr = 0;
+			inner_int_error=0.0;
+			middle_int_error=0.0;
+			outer_int_error=0.0;
 		}
 
 	}

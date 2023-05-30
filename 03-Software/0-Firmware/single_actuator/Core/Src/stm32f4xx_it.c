@@ -31,12 +31,13 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define INNER_GEAR_RATIO 80
-#define MIDDLE_GEAR_RATIO 80*5
-#define OUTER_GEAR_RATIO 80
+#define INNER_GEAR_RATIO 40
+#define MIDDLE_GEAR_RATIO 40*5
+#define OUTER_GEAR_RATIO 40
 #define DUTY_PERCENTAGE_LIMIT 0.95
 
 #define	BUF_SIZE	8
+#define ANTI_WIND_UP 40
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -69,8 +70,8 @@ uint8_t check_receive;
 uint8_t usb_temp[BUF_SIZE];
 
 uint8_t empty_string[BUF_SIZE] = "";
-uint8_t acknowledge_message[BUF_SIZE] = "a";
-uint8_t error_message[BUF_SIZE] = "e";
+uint8_t acknowledge_message[BUF_SIZE] = "a\n";
+uint8_t error_message[BUF_SIZE] = "e\n";
 
 /* Define and initialize the encoder and motor position variables (pulse counters) */
 int enc_inner_pos = 0;
@@ -89,9 +90,13 @@ float mot_outer_set_pos = 0;
 extern float X_curr;
 extern float X_ref;
 
+
 /* PID related*/
 extern uint32_t PID_freq;
 
+float inner_pos_error=0.0;
+float middle_pos_error=0.0;
+float outer_pos_error=0.0;
 float pre_inner_pos_error=0.0;
 float pre_middle_pos_error=0.0;
 float pre_outer_pos_error=0.0;
@@ -99,16 +104,16 @@ float inner_int_error=0.0;
 float middle_int_error=0.0;
 float outer_int_error=0.0;
 
-float kp_inner=10.0;
-float ki_inner=0.0;
+float kp_inner=1500.0;
+float ki_inner=1500.0;
 float kd_inner=0.0;
 
-float kp_middle=10.0;
-float ki_middle=0.0;
+float kp_middle=1500.0;
+float ki_middle=1500.0;
 float kd_middle=0.0;
 
-float kp_outer=10.0;
-float ki_outer=0.0;
+float kp_outer=1500.0;
+float ki_outer=1500.0;
 float kd_outer=0.0;
 
 
@@ -369,9 +374,9 @@ void TIM4_IRQHandler(void)
 	if(error_code == 0 && external_shutdown == 0){
 
 	/* Determine PID errors */
-	float inner_pos_error = mot_inner_set_pos - enc_inner_pos_cm;
-	float middle_pos_error = mot_middle_set_pos - enc_middle_pos_cm;
-	float outer_pos_error = mot_outer_set_pos - enc_outer_pos_cm;
+	inner_pos_error = mot_inner_set_pos - enc_inner_pos_cm;
+	middle_pos_error = mot_middle_set_pos - enc_middle_pos_cm;
+	outer_pos_error = mot_outer_set_pos - enc_outer_pos_cm;
 
 	float inner_der_error=(inner_pos_error-pre_inner_pos_error)*PID_freq;
 	float middle_der_error=(middle_pos_error-pre_middle_pos_error)*PID_freq;
@@ -381,42 +386,54 @@ void TIM4_IRQHandler(void)
 	middle_int_error+=middle_pos_error/PID_freq;
 	outer_int_error+=outer_pos_error/PID_freq;
 
+	if (inner_int_error>=ANTI_WIND_UP) inner_int_error=ANTI_WIND_UP;
+	if (middle_int_error>=ANTI_WIND_UP) middle_int_error=ANTI_WIND_UP;
+	if (outer_int_error>=ANTI_WIND_UP) outer_int_error=ANTI_WIND_UP;
+
+	if (inner_int_error<=-ANTI_WIND_UP) inner_int_error=-ANTI_WIND_UP;
+	if (middle_int_error<=-ANTI_WIND_UP) middle_int_error=-ANTI_WIND_UP;
+	if (outer_int_error<=-ANTI_WIND_UP) outer_int_error=-ANTI_WIND_UP;
+
+	if (((inner_pos_error>0) && (inner_int_error<0))||((inner_pos_error<0) && (inner_int_error>0))) inner_int_error=0;
+	if (((middle_pos_error>0) && (middle_int_error<0))||((middle_pos_error<0) && (middle_int_error>0))) middle_int_error=0;
+	if (((outer_pos_error>0) && (outer_int_error<0))||((outer_pos_error<0) && (outer_int_error>0))) outer_int_error=0;
+
 	pre_inner_pos_error=inner_pos_error;
 	pre_middle_pos_error=middle_pos_error;
 	pre_outer_pos_error=outer_pos_error;
 
 	/* Set the duty (only proportional implemented for now) */
-	duty_inner = (int)(kp_inner*inner_pos_error+kd_inner*inner_der_error+ki_inner*inner_int_error);
+	duty_inner = (int)((kp_inner*inner_pos_error)+(kd_inner*inner_der_error)+(ki_inner*inner_int_error));
 	duty_middle = (int)(kp_middle*middle_pos_error+kd_middle*middle_der_error+ki_middle*middle_int_error);
 	duty_outer = (int)(kp_outer*outer_pos_error+kd_outer*outer_der_error+ki_outer*outer_int_error);
 
-	/* Set the direction */
+	/* Set the direction (MOTOR CONNECTIONS REVERSED!!!) */
 	if(duty_inner > 0){
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
 	}
 	else{
 			duty_inner = -duty_inner;
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
 	}
 	if(duty_middle > 0){
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
 	}
 	else{
 			duty_middle = -duty_middle;
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
 	}
 	if(duty_outer > 0){
-			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, HIGH);
 	}
 	else{
 			duty_outer = -duty_outer;
-			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, LOW);
+			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, HIGH);
 	}
 
 	/* Limit the duty */
@@ -429,13 +446,12 @@ void TIM4_IRQHandler(void)
 	if(duty_outer > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
 			duty_outer = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
 		}
-
 	TIM1->CCR1 = duty_inner;
 	TIM1->CCR2 = duty_middle;
 	TIM1->CCR3 = duty_outer;
 
 	// Send acknowledge if the system reaches steady state
-	if (ack_to_be_sent == 1 && inner_pos_error == 0){
+	if (ack_to_be_sent == 1 && fabs(inner_pos_error) <= 0.5 && fabs(middle_pos_error) <= 0.5 && fabs(outer_pos_error) <= 0.5){
 		steady_state_counter++;
 		if (steady_state_counter == 255){
 			memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));

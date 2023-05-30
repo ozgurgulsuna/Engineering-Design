@@ -39,16 +39,16 @@
 #define D_HIGHER_TO_MAIN_POLE 	20			// arms(3) in matlab code
 #define L_HIGHER_POLE 			28			// arms(4) in matlab code
 
-#define D_INNER_OFFSET 			0   // TO BE MEASURED AND CHANGED
-#define D_MIDDLE_OFFSET 		0	// TO BE MEASURED AND CHANGED
-#define D_OUTER_OFFSET		 	0	// TO BE MEASURED AND CHANGED
+#define D_INNER_OFFSET 			18.4056   // TO BE MEASURED AND CHANGED
+#define D_MIDDLE_OFFSET 		23.6718	  // TO BE MEASURED AND CHANGED
+#define D_OUTER_OFFSET		 	43.1741	  // TO BE MEASURED AND CHANGED
 
-#define INNER_SET_LIMIT_MAX 1000 /* WHAT SHOULD BE THE LIMITS??? */
-#define INNER_SET_LIMIT_MIN 0
-#define MIDDLE_SET_LIMIT_MAX 1000
-#define MIDDLE_SET_LIMIT_MIN 0
-#define OUTER_SET_LIMIT_MAX 1000
-#define OUTER_SET_LIMIT_MIN 0
+#define INNER_SET_LIMIT_MAX 10 /* WHAT SHOULD BE THE LIMITS??? */
+#define INNER_SET_LIMIT_MIN -10
+#define MIDDLE_SET_LIMIT_MAX 10
+#define MIDDLE_SET_LIMIT_MIN -10
+#define OUTER_SET_LIMIT_MAX 10
+#define OUTER_SET_LIMIT_MIN -10
 
 #define	BUF_SIZE	8
 /* USER CODE END PD */
@@ -98,6 +98,8 @@ extern float mot_inner_set_pos;
 extern float mot_middle_set_pos;
 extern float mot_outer_set_pos;
 
+
+extern char error_message[BUF_SIZE];
 
 /* USER CODE END PV */
 
@@ -154,6 +156,9 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  // Store the frequency of PID loop
+    PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
+
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim1);
 
@@ -161,8 +166,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
 
-  // Store the frequency of PID loop
-  PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -426,13 +430,13 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : ENC1_A_Pin ENC2_A_Pin ENC3_A_Pin */
   GPIO_InitStruct.Pin = ENC1_A_Pin|ENC2_A_Pin|ENC3_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ENC1_B_Pin ENC2_B_Pin ENC3_B_Pin */
   GPIO_InitStruct.Pin = ENC1_B_Pin|ENC2_B_Pin|ENC3_B_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : IN1_A_Pin IN1_B_Pin IN2_A_Pin IN2_B_Pin
@@ -467,6 +471,8 @@ void inverse_kinematics(){
 	// Apply the cos theorem
 	d_middle_ref = inverse_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, (theta_1_ref - M_PI_2));
 	d_outer_ref = inverse_cos_theorem(D_HIGHER_TO_MAIN_POLE, L_HIGHER_POLE, (theta_1_ref - M_PI_2));
+
+	d_inner_ref = d_outer_ref - d_inner_ref;
 
 	// Determine motor position reference values (everything in cm)
 	mot_inner_set_pos = d_inner_ref - D_INNER_OFFSET;
@@ -512,6 +518,9 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  // EYVAH
+	  memcpy(&usb_out, &error_message, sizeof(usb_out));
+	  CDC_Transmit_FS(usb_out, sizeof(usb_out));
   }
   /* USER CODE END Error_Handler_Debug */
 }
