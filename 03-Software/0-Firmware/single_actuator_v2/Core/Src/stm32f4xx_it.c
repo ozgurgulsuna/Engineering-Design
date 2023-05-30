@@ -38,7 +38,7 @@
 #define DUTY_PERCENTAGE_LIMIT 	0.95
 
 #define MOTOR_SPEED_ESTIMATE	2	// (cm per second)
-#define INTERPOLATION_INTERVAL	0.5 // (0.5 cm per interval)
+double INTERPOLATION_INTERVAL=0.5; // (0.5 cm per interval)
 
 #define	BUF_SIZE	 	8
 #define ANTI_WIND_UP 	40
@@ -75,6 +75,7 @@ uint8_t usb_temp[BUF_SIZE];
 uint8_t empty_string[BUF_SIZE] = "";
 uint8_t acknowledge_message[BUF_SIZE] = "a\n";
 uint8_t error_message[BUF_SIZE] = "e\n";
+float X_ref_temp;
 
 /* Define and initialize the encoder and motor position variables (pulse counters) */
 int enc_inner_pos = 0;
@@ -106,18 +107,19 @@ float inner_int_error=0.0;
 float middle_int_error=0.0;
 float outer_int_error=0.0;
 
-float kp_inner=300.0;
-float ki_inner=0.0;
+float kp_inner=400.0;
+float ki_inner=100.0;
 float kd_inner=0.0;
 
 float kp_middle=300.0;
-float ki_middle=0.0;
+float ki_middle=100.0;
 float kd_middle=0.0;
 
 float kp_outer=300.0;
-float ki_outer=0.0;
+float ki_outer=100.0;
 float kd_outer=0.0;
 
+uint8_t initializing = 1;
 
 /* PWM-Specific Variables */
 int duty_inner = 0;
@@ -362,28 +364,31 @@ void TIM3_IRQHandler(void)
 	// interval is approximately equal to the distance that the system can
 	// travel in the timer period. (??? IS IT SO? IT LOOKS LIKE IT WILL WORK
 	// AS SOON AS THE TIMER PERIOD IS LOW ENOUGH.)
-	float X_ref_temp;
+	if (initializing == 0){
+		X_ref_temp = 0;
 
-	if (X_curr > X_ref){
-		if((X_curr-X_ref)>INTERPOLATION_INTERVAL)
-			X_ref_temp = X_curr - INTERPOLATION_INTERVAL;
-		else
-			X_ref_temp = X_ref;
-	}
-	else{
-		if((X_ref-X_curr)<INTERPOLATION_INTERVAL)
-			X_ref_temp = X_curr + INTERPOLATION_INTERVAL;
-		else
-			X_ref_temp = X_ref;
+		if (X_curr > X_ref){
+			if((X_curr-X_ref)>INTERPOLATION_INTERVAL)
+				X_ref_temp = X_curr - INTERPOLATION_INTERVAL;
+			else
+				X_ref_temp = X_ref;
+		}
+		else{
+			if((X_ref-X_curr)>INTERPOLATION_INTERVAL)
+				X_ref_temp = X_curr + INTERPOLATION_INTERVAL;
+			else
+				X_ref_temp = X_ref;
+		}
+
+		inverse_kinematics(X_ref_temp);
+
+		if( (ack_to_be_sent == 1) && (fabs(X_ref - X_curr) < 0.5)){
+			memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
+			CDC_Transmit_FS(usb_out, sizeof(usb_out));
+			ack_to_be_sent = 0;
+		}
 	}
 
-	inverse_kinematics(X_ref_temp);
-
-	if( fabs(X_ref - X_curr) < 0.5){
-		memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
-		CDC_Transmit_FS(usb_out, sizeof(usb_out));
-		ack_to_be_sent = 0;
-	}
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
@@ -478,15 +483,11 @@ void TIM4_IRQHandler(void)
 	TIM1->CCR2 = duty_middle;
 	TIM1->CCR3 = duty_outer;
 
-	// Send acknowledge ifj the system reaches steady state
+	// Send acknowledge if the system reaches steady state
 	if (ack_to_be_sent == 1 && fabs(inner_pos_error) <= 0.5 && fabs(middle_pos_error) <= 0.5 && fabs(outer_pos_error) <= 0.5){
 		steady_state_counter++;
 		if(steady_state_counter == 1){
 			forward_kinematics();
-		}
-
-		if (steady_state_counter == 255){
-			// forward_kinematics(); X_curr should be updated above, as soon as inner_pos_error = 0 !!!
 		}
 	}
 	else {
@@ -501,6 +502,8 @@ void TIM4_IRQHandler(void)
 		memcpy(&usb_out, &error_message, sizeof(usb_out));
 		CDC_Transmit_FS(usb_out, sizeof(usb_out));
 	}
+
+	forward_kinematics();
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
@@ -560,13 +563,16 @@ void OTG_FS_IRQHandler(void)
 
 			// Limit initializing movements to 5 cm
 			if(abs(mot_inner_move_mm) < 50){
-				mot_inner_set_pos = mot_inner_set_pos + (float)mot_inner_move_mm/10;
+				enc_inner_pos_cm =  - (float)mot_inner_move_mm/10;
+				enc_inner_pos = (float)enc_inner_pos_cm*INNER_GEAR_RATIO;
 			}
 			if(abs(mot_middle_move_mm) < 50){
-				mot_middle_set_pos = mot_middle_set_pos + (float)mot_middle_move_mm/10;
+				enc_middle_pos_cm =  - (float)mot_middle_move_mm/10;
+				enc_middle_pos = (float)enc_middle_pos_cm*MIDDLE_GEAR_RATIO;
 			}
 			if(abs(mot_outer_move_mm) < 50){
-				mot_outer_set_pos = mot_outer_set_pos + (float)mot_outer_move_mm/10;
+				enc_outer_pos_cm =  - (float)mot_outer_move_mm/10;
+				enc_outer_pos = (float)enc_outer_pos_cm*OUTER_GEAR_RATIO;
 			}
 		}
 
@@ -577,6 +583,8 @@ void OTG_FS_IRQHandler(void)
 		if(usb_in[0] == 'b'){
 			// Finish initializing and begin the main process by reseting
 			// motor positions and set values
+			initializing = 0;
+
 			mot_inner_set_pos = 0;
 			mot_middle_set_pos = 0;
 			mot_outer_set_pos = 0;

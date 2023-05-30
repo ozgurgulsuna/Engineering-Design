@@ -161,6 +161,7 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_Base_Start_IT(&htim3);
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
@@ -327,9 +328,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 200;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 48000;
+  htim3.Init.Period = 47999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -463,9 +464,10 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void inverse_kinematics(float X_ref_temp){
 
+
 	// Determine the two angles and one length
-	d_outer_ref = sqrt(X_ref*X_ref + 20*X_ref + 1864);        // in cm
-	theta_1_ref = 2*atan( (d_outer_ref + 42)/(X_ref + 10) );  // in radians
+	d_outer_ref = sqrt(X_ref_temp*X_ref_temp + 20*X_ref_temp + 1864);        // in cm
+	theta_1_ref = 2*atan( (d_outer_ref + 42)/(X_ref_temp + 10) );  // in radians
 	// theta_3_ref = M_PI + theta_1_ref;                      // in radians -- NOT REQUIRED
 
 	// Apply the cos theorem
