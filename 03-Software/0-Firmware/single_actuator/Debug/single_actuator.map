@@ -158,7 +158,7 @@ Discarded input sections
  .text          0x0000000000000000        0x0 ./Core/Src/main.o
  .data          0x0000000000000000        0x0 ./Core/Src/main.o
  .bss           0x0000000000000000        0x0 ./Core/Src/main.o
- .bss.d_outer_curr
+ .bss.d_inner_curr
                 0x0000000000000000        0x4 ./Core/Src/main.o
  .group         0x0000000000000000        0xc ./Core/Src/stm32f4xx_hal_msp.o
  .group         0x0000000000000000        0xc ./Core/Src/stm32f4xx_hal_msp.o
@@ -5382,12 +5382,12 @@ LOAD c:/st/stm32cubeide_1.11.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.ext
  .bss.theta_1_curr
                 0x00000000200002a4        0x4 ./Core/Src/main.o
                 0x00000000200002a4                theta_1_curr
- .bss.d_middle_curr
+ .bss.d_outer_curr
                 0x00000000200002a8        0x4 ./Core/Src/main.o
-                0x00000000200002a8                d_middle_curr
- .bss.d_inner_curr
+                0x00000000200002a8                d_outer_curr
+ .bss.d_middle_curr
                 0x00000000200002ac        0x4 ./Core/Src/main.o
-                0x00000000200002ac                d_inner_curr
+                0x00000000200002ac                d_middle_curr
  .bss.X_curr    0x00000000200002b0        0x4 ./Core/Src/main.o
                 0x00000000200002b0                X_curr
  .bss.error_code

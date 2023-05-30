@@ -487,7 +487,7 @@ void inverse_kinematics(float X_ref_temp){
 void forward_kinematics(){
 	// Find d_middle_curr & d_inner_curr
 	d_middle_curr = enc_middle_pos_cm + D_MIDDLE_OFFSET;
-	d_outer_curr = enc_inner_pos_cm + D_INNER_OFFSET;
+	d_outer_curr = enc_inner_pos_cm + D_OUTER_OFFSET;
 
 	// Find theta_1_curr using cos theorem
 	theta_1_curr = forward_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, d_middle_curr);

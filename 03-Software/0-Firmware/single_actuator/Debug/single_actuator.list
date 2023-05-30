@@ -2332,7 +2332,7 @@ void forward_kinematics(){
  80016a4:	4603      	mov	r3, r0
  80016a6:	4a2d      	ldr	r2, [pc, #180]	; (800175c <forward_kinematics+0xdc>)
  80016a8:	6013      	str	r3, [r2, #0]
-	d_inner_curr = enc_inner_pos_cm + D_INNER_OFFSET;
+	d_outer_curr = enc_inner_pos_cm + D_OUTER_OFFSET;
  80016aa:	4b2d      	ldr	r3, [pc, #180]	; (8001760 <forward_kinematics+0xe0>)
  80016ac:	681b      	ldr	r3, [r3, #0]
  80016ae:	4618      	mov	r0, r3
@@ -2362,7 +2362,7 @@ void forward_kinematics(){
  80016ec:	edc3 7a00 	vstr	s15, [r3]
 
 	// Update X_curr from the values
-	X_curr = d_inner_curr*sin(theta_1_curr) - 10;
+	X_curr = d_outer_curr*sin(theta_1_curr) - 10;
  80016f0:	4b1c      	ldr	r3, [pc, #112]	; (8001764 <forward_kinematics+0xe4>)
  80016f2:	681b      	ldr	r3, [r3, #0]
  80016f4:	4618      	mov	r0, r3
@@ -2401,12 +2401,12 @@ void forward_kinematics(){
  8001746:	bdb0      	pop	{r4, r5, r7, pc}
  8001748:	80afbdc8 	.word	0x80afbdc8
  800174c:	4037abf8 	.word	0x4037abf8
- 8001750:	bf6f1638 	.word	0xbf6f1638
- 8001754:	403267d7 	.word	0x403267d7
+ 8001750:	bfb23217 	.word	0xbfb23217
+ 8001754:	40459647 	.word	0x40459647
  8001758:	200002e0 	.word	0x200002e0
- 800175c:	200002a8 	.word	0x200002a8
+ 800175c:	200002ac 	.word	0x200002ac
  8001760:	200002dc 	.word	0x200002dc
- 8001764:	200002ac 	.word	0x200002ac
+ 8001764:	200002a8 	.word	0x200002a8
  8001768:	41c75bf5 	.word	0x41c75bf5
  800176c:	41701d15 	.word	0x41701d15
  8001770:	200002a4 	.word	0x200002a4
