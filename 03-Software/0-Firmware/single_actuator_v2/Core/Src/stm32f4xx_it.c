@@ -107,16 +107,16 @@ float inner_int_error=0.0;
 float middle_int_error=0.0;
 float outer_int_error=0.0;
 
-float kp_inner=400.0;
-float ki_inner=100.0;
+float kp_inner=1000.0;
+float ki_inner=400.0;
 float kd_inner=0.0;
 
-float kp_middle=300.0;
-float ki_middle=100.0;
+float kp_middle=800.0;
+float ki_middle=400.0;
 float kd_middle=0.0;
 
-float kp_outer=300.0;
-float ki_outer=100.0;
+float kp_outer=800.0;
+float ki_outer=400.0;
 float kd_outer=0.0;
 
 uint8_t initializing = 1;
