@@ -39,16 +39,16 @@
 #define D_HIGHER_TO_MAIN_POLE 	20			// arms(3) in matlab code
 #define L_HIGHER_POLE 			28			// arms(4) in matlab code
 
-#define D_INNER_OFFSET 			0   // TO BE MEASURED AND CHANGED
-#define D_MIDDLE_OFFSET 		0	// TO BE MEASURED AND CHANGED
-#define D_OUTER_OFFSET		 	0	// TO BE MEASURED AND CHANGED
+#define D_INNER_OFFSET 			18.4056358 // TO BE MEASURED AND CHANGED
+#define D_MIDDLE_OFFSET 		23.6717606 // TO BE MEASURED AND CHANGED
+#define D_OUTER_OFFSET		 	43.1740646 // TO BE MEASURED AND CHANGED
 
-#define INNER_SET_LIMIT_MAX 10 /* WHAT SHOULD BE THE LIMITS??? */
-#define INNER_SET_LIMIT_MIN -10
-#define MIDDLE_SET_LIMIT_MAX 10
-#define MIDDLE_SET_LIMIT_MIN -10
-#define OUTER_SET_LIMIT_MAX 10
-#define OUTER_SET_LIMIT_MIN -10
+#define INNER_SET_LIMIT_MAX 	16.25 /* WHAT SHOULD BE THE LIMITS??? */
+#define INNER_SET_LIMIT_MIN 	-11.75
+#define MIDDLE_SET_LIMIT_MAX 	12
+#define MIDDLE_SET_LIMIT_MIN 	-11
+#define OUTER_SET_LIMIT_MAX 	12
+#define OUTER_SET_LIMIT_MIN 	-4.80
 
 #define	BUF_SIZE	8
 
@@ -248,7 +248,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 4799;
+  htim1.Init.Period = 959;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -487,7 +487,7 @@ void inverse_kinematics(float X_ref_temp){
 void forward_kinematics(){
 	// Find d_middle_curr & d_inner_curr
 	d_middle_curr = enc_middle_pos_cm + D_MIDDLE_OFFSET;
-	d_outer_curr = enc_inner_pos_cm + D_OUTER_OFFSET;
+	d_outer_curr = enc_outer_pos_cm + D_OUTER_OFFSET;
 
 	// Find theta_1_curr using cos theorem
 	theta_1_curr = forward_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, d_middle_curr);

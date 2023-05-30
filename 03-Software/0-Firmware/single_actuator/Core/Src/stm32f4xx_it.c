@@ -104,16 +104,16 @@ float inner_int_error=0.0;
 float middle_int_error=0.0;
 float outer_int_error=0.0;
 
-float kp_inner=1500.0;
-float ki_inner=1500.0;
+float kp_inner=300.0;
+float ki_inner=300.0;
 float kd_inner=0.0;
 
-float kp_middle=1500.0;
-float ki_middle=1500.0;
+float kp_middle=300.0;
+float ki_middle=300.0;
 float kd_middle=0.0;
 
-float kp_outer=1500.0;
-float ki_outer=1500.0;
+float kp_outer=300.0;
+float ki_outer=300.0;
 float kd_outer=0.0;
 
 
@@ -454,7 +454,7 @@ void TIM4_IRQHandler(void)
 	if (ack_to_be_sent == 1 && fabs(inner_pos_error) <= 0.5 && fabs(middle_pos_error) <= 0.5 && fabs(outer_pos_error) <= 0.5){
 		steady_state_counter++;
 		if (steady_state_counter == 255){
-			forward_kinematics();
+			// forward_kinematics(); WHY NOT RUN IT AT 10kHz ??
 			memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
 			CDC_Transmit_FS(usb_out, sizeof(usb_out));
 			ack_to_be_sent = 0;
@@ -472,6 +472,7 @@ void TIM4_IRQHandler(void)
 		memcpy(&usb_out, &error_message, sizeof(usb_out));
 		CDC_Transmit_FS(usb_out, sizeof(usb_out));
 	}
+	forward_kinematics();
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */

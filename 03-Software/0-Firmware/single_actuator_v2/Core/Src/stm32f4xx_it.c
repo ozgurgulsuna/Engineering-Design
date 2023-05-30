@@ -96,6 +96,9 @@ extern float X_ref;
 /* PID related*/
 extern uint32_t PID_freq;
 
+float inner_pos_error=0.0;
+float middle_pos_error=0.0;
+float outer_pos_error=0.0;
 float pre_inner_pos_error=0.0;
 float pre_middle_pos_error=0.0;
 float pre_outer_pos_error=0.0;
@@ -103,15 +106,15 @@ float inner_int_error=0.0;
 float middle_int_error=0.0;
 float outer_int_error=0.0;
 
-float kp_inner=10.0;
+float kp_inner=300.0;
 float ki_inner=0.0;
 float kd_inner=0.0;
 
-float kp_middle=10.0;
+float kp_middle=300.0;
 float ki_middle=0.0;
 float kd_middle=0.0;
 
-float kp_outer=10.0;
+float kp_outer=300.0;
 float ki_outer=0.0;
 float kd_outer=0.0;
 
@@ -359,15 +362,24 @@ void TIM3_IRQHandler(void)
 	// interval is approximately equal to the distance that the system can
 	// travel in the timer period. (??? IS IT SO? IT LOOKS LIKE IT WILL WORK
 	// AS SOON AS THE TIMER PERIOD IS LOW ENOUGH.)
-	float X_ref_temp = X_curr + INTERPOLATION_INTERVAL;
-	if (X_ref_temp < X_ref){
-		inverse_kinematics(X_ref_temp);
+	float X_ref_temp;
+
+	if (X_curr > X_ref){
+		if((X_curr-X_ref)>INTERPOLATION_INTERVAL)
+			X_ref_temp = X_curr - INTERPOLATION_INTERVAL;
+		else
+			X_ref_temp = X_ref;
 	}
 	else{
-		inverse_kinematics(X_ref);
+		if((X_ref-X_curr)<INTERPOLATION_INTERVAL)
+			X_ref_temp = X_curr + INTERPOLATION_INTERVAL;
+		else
+			X_ref_temp = X_ref;
 	}
 
-	if(X_ref == X_curr){
+	inverse_kinematics(X_ref_temp);
+
+	if( fabs(X_ref - X_curr) < 0.5){
 		memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
 		CDC_Transmit_FS(usb_out, sizeof(usb_out));
 		ack_to_be_sent = 0;
@@ -389,9 +401,9 @@ void TIM4_IRQHandler(void)
 	if(error_code == 0 && external_shutdown == 0){
 
 	/* Determine PID errors */
-	float inner_pos_error = mot_inner_set_pos - enc_inner_pos_cm;
-	float middle_pos_error = mot_middle_set_pos - enc_middle_pos_cm;
-	float outer_pos_error = mot_outer_set_pos - enc_outer_pos_cm;
+	inner_pos_error = mot_inner_set_pos - enc_inner_pos_cm;
+	middle_pos_error = mot_middle_set_pos - enc_middle_pos_cm;
+	outer_pos_error = mot_outer_set_pos - enc_outer_pos_cm;
 
 	float inner_der_error=(inner_pos_error-pre_inner_pos_error)*PID_freq;
 	float middle_der_error=(middle_pos_error-pre_middle_pos_error)*PID_freq;
@@ -528,7 +540,7 @@ void OTG_FS_IRQHandler(void)
 			CDC_Transmit_FS(usb_in,sizeof(usb_in));
 			*/
 
-			X_ref = X_curr + (float)move_x/10;
+			X_ref = X_curr + (float)move_x/10.0;
 
 			ack_to_be_sent = 1;
 
@@ -579,6 +591,12 @@ void OTG_FS_IRQHandler(void)
 			inner_int_error=0.0;
 			middle_int_error=0.0;
 			outer_int_error=0.0;
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = 0;
+			TIM1->CCR3 = 0;
+			duty_inner = 0;
+			duty_middle = 0;
+			duty_outer = 0;
 		}
 
 	}
