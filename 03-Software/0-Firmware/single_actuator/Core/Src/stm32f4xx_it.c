@@ -454,6 +454,7 @@ void TIM4_IRQHandler(void)
 	if (ack_to_be_sent == 1 && fabs(inner_pos_error) <= 0.5 && fabs(middle_pos_error) <= 0.5 && fabs(outer_pos_error) <= 0.5){
 		steady_state_counter++;
 		if (steady_state_counter == 255){
+			forward_kinematics();
 			memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
 			CDC_Transmit_FS(usb_out, sizeof(usb_out));
 			ack_to_be_sent = 0;

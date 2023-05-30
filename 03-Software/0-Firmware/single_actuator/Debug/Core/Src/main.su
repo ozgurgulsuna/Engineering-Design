@@ -5,7 +5,7 @@
 ../Core/Src/main.c:361:13:MX_TIM4_Init	32	static
 ../Core/Src/main.c:406:13:MX_GPIO_Init	48	static
 ../Core/Src/main.c:464:6:inverse_kinematics	8	static
-../Core/Src/main.c:485:6:forward_kinematics	16	static
-../Core/Src/main.c:497:7:inverse_cos_theorem	40	static
-../Core/Src/main.c:502:7:forward_cos_theorem	24	static
-../Core/Src/main.c:512:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:487:6:forward_kinematics	16	static
+../Core/Src/main.c:499:7:inverse_cos_theorem	40	static
+../Core/Src/main.c:504:7:forward_cos_theorem	24	static
+../Core/Src/main.c:514:6:Error_Handler	8	static,ignoring_inline_asm

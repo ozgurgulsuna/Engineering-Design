@@ -12,4 +12,4 @@
 ../Core/Src/stm32f4xx_it.c:335:6:EXTI4_IRQHandler	8	static
 ../Core/Src/stm32f4xx_it.c:356:6:TIM3_IRQHandler	8	static
 ../Core/Src/stm32f4xx_it.c:370:6:TIM4_IRQHandler	32	static
-../Core/Src/stm32f4xx_it.c:484:6:OTG_FS_IRQHandler	8	static
+../Core/Src/stm32f4xx_it.c:485:6:OTG_FS_IRQHandler	8	static

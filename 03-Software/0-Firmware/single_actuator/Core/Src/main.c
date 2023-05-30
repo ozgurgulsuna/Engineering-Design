@@ -39,9 +39,9 @@
 #define D_HIGHER_TO_MAIN_POLE 	20			// arms(3) in matlab code
 #define L_HIGHER_POLE 			28			// arms(4) in matlab code
 
-#define D_INNER_OFFSET 			18.4056   // TO BE MEASURED AND CHANGED
-#define D_MIDDLE_OFFSET 		23.6718	  // TO BE MEASURED AND CHANGED
-#define D_OUTER_OFFSET		 	43.1741	  // TO BE MEASURED AND CHANGED
+#define D_INNER_OFFSET 			18.4056358 // TO BE MEASURED AND CHANGED
+#define D_MIDDLE_OFFSET 		23.6717606 // TO BE MEASURED AND CHANGED
+#define D_OUTER_OFFSET		 	43.1740646 // TO BE MEASURED AND CHANGED
 
 #define INNER_SET_LIMIT_MAX 10 /* WHAT SHOULD BE THE LIMITS??? */
 #define INNER_SET_LIMIT_MIN -10
@@ -464,13 +464,13 @@ static void MX_GPIO_Init(void)
 void inverse_kinematics(){
 
 	// Determine the two angles and one length
-	d_inner_ref = sqrt(X_ref*X_ref + 20*X_ref + 1864);        // in cm
-	theta_1_ref = 2*atan( (d_inner_ref + 42)/(X_ref + 10) );  // in radians
+	d_outer_ref = sqrt(X_ref*X_ref + 20*X_ref + 1864);        // in cm
+	theta_1_ref = 2*atan( (d_outer_ref + 42)/(X_ref + 10) );  // in radians
 	// theta_3_ref = M_PI + theta_1_ref;                      // in radians -- NOT REQUIRED
 
 	// Apply the cos theorem
 	d_middle_ref = inverse_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, (theta_1_ref - M_PI_2));
-	d_outer_ref = inverse_cos_theorem(D_HIGHER_TO_MAIN_POLE, L_HIGHER_POLE, (theta_1_ref - M_PI_2));
+	d_inner_ref = inverse_cos_theorem(D_HIGHER_TO_MAIN_POLE, L_HIGHER_POLE, (theta_1_ref - M_PI_2));
 
 	d_inner_ref = d_outer_ref - d_inner_ref;
 
@@ -487,13 +487,13 @@ void inverse_kinematics(){
 void forward_kinematics(){
 	// Find d_middle_curr & d_inner_curr
 	d_middle_curr = enc_middle_pos_cm + D_MIDDLE_OFFSET;
-	d_inner_curr = enc_inner_pos_cm + D_INNER_OFFSET;
+	d_outer_curr = enc_inner_pos_cm + D_INNER_OFFSET;
 
 	// Find theta_1_curr using cos theorem
 	theta_1_curr = forward_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, d_middle_curr);
 
 	// Update X_curr from the values
-	X_curr = d_inner_curr*sin(theta_1_curr) - 10;
+	X_curr = d_outer_curr*sin(theta_1_curr) - 10;
 }
 
 float inverse_cos_theorem(float a, float b, float beta){

@@ -464,20 +464,21 @@ static void MX_GPIO_Init(void)
 void inverse_kinematics(float X_ref_temp){
 
 	// Determine the two angles and one length
-	d_inner_ref = sqrt(X_ref_temp*X_ref_temp + 20*X_ref_temp + 1864);        // in cm
-	theta_1_ref = 2*atan( (d_inner_ref + 42)/(X_ref_temp + 10) );  // in radians
+	d_outer_ref = sqrt(X_ref*X_ref + 20*X_ref + 1864);        // in cm
+	theta_1_ref = 2*atan( (d_outer_ref + 42)/(X_ref + 10) );  // in radians
 	// theta_3_ref = M_PI + theta_1_ref;                      // in radians -- NOT REQUIRED
 
 	// Apply the cos theorem
 	d_middle_ref = inverse_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, (theta_1_ref - M_PI_2));
-	d_outer_ref = inverse_cos_theorem(D_HIGHER_TO_MAIN_POLE, L_HIGHER_POLE, (theta_1_ref - M_PI_2));
+	d_inner_ref = inverse_cos_theorem(D_HIGHER_TO_MAIN_POLE, L_HIGHER_POLE, (theta_1_ref - M_PI_2));
+
+	d_inner_ref = d_outer_ref - d_inner_ref;
 
 	// Determine motor position reference values (everything in cm)
 	mot_inner_set_pos = d_inner_ref - D_INNER_OFFSET;
 	mot_middle_set_pos = d_middle_ref - D_MIDDLE_OFFSET;
 	mot_outer_set_pos = d_outer_ref - D_OUTER_OFFSET;
 
-	// If the set value is larger than the limit, set error code to 'r' ('out of range' error)
 	if ((mot_inner_set_pos>INNER_SET_LIMIT_MAX) || (mot_inner_set_pos<INNER_SET_LIMIT_MIN)) error_code ='r';
 	if ((mot_middle_set_pos>MIDDLE_SET_LIMIT_MAX) || (mot_middle_set_pos<MIDDLE_SET_LIMIT_MIN)) error_code ='r';
 	if ((mot_outer_set_pos>OUTER_SET_LIMIT_MAX) || (mot_outer_set_pos<OUTER_SET_LIMIT_MIN)) error_code ='r';
@@ -486,13 +487,13 @@ void inverse_kinematics(float X_ref_temp){
 void forward_kinematics(){
 	// Find d_middle_curr & d_inner_curr
 	d_middle_curr = enc_middle_pos_cm + D_MIDDLE_OFFSET;
-	d_inner_curr = enc_inner_pos_cm + D_INNER_OFFSET;
+	d_outer_curr = enc_inner_pos_cm + D_INNER_OFFSET;
 
 	// Find theta_1_curr using cos theorem
 	theta_1_curr = forward_cos_theorem(D_LOWER_TO_MAIN_POLE, L_LOWER_POLE, d_middle_curr);
 
 	// Update X_curr from the values
-	X_curr = d_inner_curr*sin(theta_1_curr) - 10;
+	X_curr = d_outer_curr*sin(theta_1_curr) - 10;
 }
 
 float inverse_cos_theorem(float a, float b, float beta){
