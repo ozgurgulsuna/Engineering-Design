@@ -4,11 +4,13 @@ import time
 import cv2 as cv
 import threading
 
+"""
 import background
 import perspective_2
 import img_compare
 import per_dir_2
 import rect_detect_2 as rect_detect
+"""
 
 # Define commands
 move_initialize_command = 'i'
@@ -16,21 +18,23 @@ move_command = 'm'
 shutdown_command = 's'
 error_command = 'e'
 begin_command = 'b'
+zero_command = 'z'
+interpolation_interval = 25
 
 def main():
     # Hello
     print("Hello World!")
 
     # Establish connection with the serial ports
-    ser_right = serial.Serial('COM9') # open serial port
-    print(ser_right.name)             # check which port was really used
+    ser_right = serial.Serial('COM9')   # open serial port
+    print(ser_right.name)               # check which port was really used
     """
-    ser_middle = serial.Serial('/dev/ST-middle') # open serial port
-    print(ser_middle.name)             # check which port was really used
+    ser_middle = serial.Serial('COM11') # open serial port
+    print(ser_middle.name)              # check which port was really used
+    """
+    ser_left = serial.Serial('COM10')   # open serial port
+    print(ser_left.name)                # check which port was really used
     
-    ser_left = serial.Serial('/dev/ST-left') # open serial port
-    print(ser_left.name)                    # check which port was really used
-    """
 
     # Start initializing the system by moving it manually
     right_pole_initialize = input("Start initializing right pole ('y' if 'yes')?: ")
@@ -58,7 +62,7 @@ def main():
     ser_right.write(sent_message)
     
     
-    """
+    
     # Start initializing the system by moving it manually
     left_pole_initialize = input("Start initializing left pole ('y' if 'yes'): ")
 
@@ -83,7 +87,7 @@ def main():
     print(sent_message)
     print('')
     ser_left.write(sent_message)
-    """
+    
     
     """
     # Initialize cameras, take background pictures, etc.
@@ -102,32 +106,83 @@ def main():
     """
     
     while True:
-        """
-        try: 
-            move_x, move_y = get_xy(background_image, background_image_r)
-        except:
-            # Shutdown??
-            # If not acknowledged, shutdown
-            # sent_message = shutdown_command.encode('utf-8')
-            # ser_right.write(sent_message)
-            # ser_middle.write(sent_message)
-            # ser_left.write(sent_message)
-            continue
-        """
-        """        
-        """
+        
         # move_x, move_y = get_xy(background_image, background_image_r)
         move_x = int(input("Displacement in X axis (in mm): "))
         move_y = int(input("Displacement in Y axis (in mm): "))
         
-        # Send move command
-        sent_message = move_command.encode('utf-8') + move_x.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
-        ser_right.write(sent_message)
-        # ser_middle.write(sent_message)
-        # ser_left.write(sent_message)
+        # Send move command w/ interpolation
+        # send move y in the first step of interpolation
+        first_step =int(abs(move_x) % interpolation_interval)
+        if first_step !=0  :
+            if move_x < 0:
+                first_step = -first_step
+            sent_message_right = move_command.encode('utf-8') + first_step.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
+            ser_right.write(sent_message_right)
+
+            move_x_neg = -first_step
+            sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
+            ser_left.write(sent_message_left)
+
+            # Wait for acknowledge
+            received_message = ser_right.readline().decode('utf-8')
+            print(received_message)
         
+            # If not acknowledged, shutdown
+            if received_message != 'a':
+                pass
+                # sent_message = shutdown_command.encode('utf-8')
+                # ser_right.write(sent_message)
+                # ser_middle.write(sent_message)
+                # ser_left.write(sent_message)
+
+            move_y = 0
+
+        for step in range(int(abs(move_x)/interpolation_interval)):
+            if move_x < 0:
+                interval = -interpolation_interval
+            else:
+                interval = interpolation_interval
+
+            sent_message_right = move_command.encode('utf-8') + interval.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
+            ser_right.write(sent_message_right)
+
+            move_x_neg = -interval
+            sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
+            ser_left.write(sent_message_left)
+
+            # Wait for acknowledge
+            received_message = ser_right.readline().decode('utf-8')
+            print(received_message)
+            
+            # If not acknowledged, shutdown
+            if received_message != 'a':
+                pass
+                # sent_message = shutdown_command.encode('utf-8')
+                # ser_right.write(sent_message)
+                # ser_middle.write(sent_message)
+                # ser_left.write(sent_message)
+
+            if step == 0 :
+                move_y = 0
+
+
+        
+        """
         # Wait for acknowledge
-        received_message = ser_right.readline().decode('utf-8')
+        received_message = ser_middle.readline().decode('utf-8')
+        print(received_message)
+        
+        # If not acknowledged, shutdown
+        if received_message != 'a':
+            pass
+            # sent_message = shutdown_command.encode('utf-8')
+            # ser_right.write(sent_message)
+            # ser_middle.write(sent_message)
+            # ser_left.write(sent_message)
+        """
+        # Wait for acknowledge
+        received_message = ser_left.readline().decode('utf-8')
         print(received_message)
         
         # If not acknowledged, shutdown
@@ -138,34 +193,12 @@ def main():
             # ser_middle.write(sent_message)
             # ser_left.write(sent_message)
         
-        """
-        # Wait for acknowledge
-        received_message = ser_middle.readline().decode('utf-8')
-        print(received_message)
-        
-        # If not acknowledged, shutdown
-        if received_message != 'a':
-            # sent_message = shutdown_command.encode('utf-8')
-            # ser_right.write(sent_message)
-            # ser_middle.write(sent_message)
-            # ser_left.write(sent_message)
-        
-        # Wait for acknowledge
-        received_message = ser_left.readline().decode('utf-8')
-        print(received_message)
-        
-        # If not acknowledged, shutdown
-        if received_message != 'a':
-            # sent_message = shutdown_command.encode('utf-8')
-            # ser_right.write(sent_message)
-            # ser_middle.write(sent_message)
-            # ser_left.write(sent_message)
-        """
 
     # ser_right.close()             # close port
     # ser_middle.close()             # close port
     # ser_left.close()             # close port
 
+"""
 # This function will include the whole python code for running image processing to extract move_x & move_y
 def get_xy(background_image, background_image_r):
     start = time.time()
@@ -306,6 +339,7 @@ def camera_thread_r():
         global cam_result_2
         while(1):
                 _, cam_result_2 = vid_r.read()
+"""
 
 if __name__ == "__main__":
     main()
