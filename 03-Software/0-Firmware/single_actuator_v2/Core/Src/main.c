@@ -50,6 +50,11 @@
 #define OUTER_SET_LIMIT_MAX 	12
 #define OUTER_SET_LIMIT_MIN 	-4.80
 
+#define INNER_GEAR_RATIO 		40
+#define MIDDLE_GEAR_RATIO 		40*5
+#define OUTER_GEAR_RATIO 		40
+#define DUTY_PERCENTAGE_LIMIT 	0.95
+
 #define	BUF_SIZE	8
 
 /* USER CODE END PD */
@@ -95,9 +100,13 @@ extern float enc_middle_pos_cm;
 extern float enc_outer_pos_cm;
 
 /* Position set */
-extern float mot_inner_set_pos;
-extern float mot_middle_set_pos;
-extern float mot_outer_set_pos;
+extern float mot_inner_set_pos_cm;
+extern float mot_middle_set_pos_cm;
+extern float mot_outer_set_pos_cm;
+
+extern int mot_inner_set_pos;
+extern int mot_middle_set_pos;
+extern int mot_outer_set_pos;
 
 extern char error_message[BUF_SIZE];
 
@@ -464,7 +473,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void inverse_kinematics(float X_ref_temp){
 
-
 	// Determine the two angles and one length
 	d_outer_ref = sqrt(X_ref_temp*X_ref_temp + 20*X_ref_temp + 1864);        // in cm
 	theta_1_ref = 2*atan( (d_outer_ref + 42)/(X_ref_temp + 10) );  // in radians
@@ -477,13 +485,18 @@ void inverse_kinematics(float X_ref_temp){
 	d_inner_ref = d_outer_ref - d_inner_ref;
 
 	// Determine motor position reference values (everything in cm)
-	mot_inner_set_pos = d_inner_ref - D_INNER_OFFSET;
-	mot_middle_set_pos = d_middle_ref - D_MIDDLE_OFFSET;
-	mot_outer_set_pos = d_outer_ref - D_OUTER_OFFSET;
+	mot_inner_set_pos_cm = d_inner_ref - D_INNER_OFFSET;
+	mot_middle_set_pos_cm = d_middle_ref - D_MIDDLE_OFFSET;
+	mot_outer_set_pos_cm = d_outer_ref - D_OUTER_OFFSET;
 
-	if ((mot_inner_set_pos>INNER_SET_LIMIT_MAX) || (mot_inner_set_pos<INNER_SET_LIMIT_MIN)) error_code ='r';
-	if ((mot_middle_set_pos>MIDDLE_SET_LIMIT_MAX) || (mot_middle_set_pos<MIDDLE_SET_LIMIT_MIN)) error_code ='r';
-	if ((mot_outer_set_pos>OUTER_SET_LIMIT_MAX) || (mot_outer_set_pos<OUTER_SET_LIMIT_MIN)) error_code ='r';
+	if ((mot_inner_set_pos_cm > INNER_SET_LIMIT_MAX) || (mot_inner_set_pos_cm < INNER_SET_LIMIT_MIN)) error_code ='r';
+	if ((mot_middle_set_pos_cm > MIDDLE_SET_LIMIT_MAX) || (mot_middle_set_pos_cm < MIDDLE_SET_LIMIT_MIN)) error_code ='r';
+	if ((mot_outer_set_pos_cm > OUTER_SET_LIMIT_MAX) || (mot_outer_set_pos_cm < OUTER_SET_LIMIT_MIN)) error_code ='r';
+
+	// Determine motor position reference values (everything in cm)
+	mot_inner_set_pos = (int)(mot_inner_set_pos_cm*INNER_GEAR_RATIO);
+	mot_middle_set_pos = (int)(mot_middle_set_pos_cm*MIDDLE_GEAR_RATIO);
+	mot_outer_set_pos = (int)(mot_outer_set_pos_cm*OUTER_GEAR_RATIO);
 }
 
 void forward_kinematics(){

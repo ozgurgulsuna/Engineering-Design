@@ -87,9 +87,12 @@ float enc_middle_pos_cm = 0;
 float enc_outer_pos_cm = 0;
 
 /* Position set */
-float mot_inner_set_pos = 0;
-float mot_middle_set_pos = 0;
-float mot_outer_set_pos = 0;
+float mot_inner_set_pos_cm = 0;
+float mot_middle_set_pos_cm = 0;
+float mot_outer_set_pos_cm = 0;
+int mot_inner_set_pos = 0;
+int mot_middle_set_pos = 0;
+int mot_outer_set_pos = 0;
 
 extern float X_curr;
 extern float X_ref;
@@ -107,16 +110,16 @@ float inner_int_error=0.0;
 float middle_int_error=0.0;
 float outer_int_error=0.0;
 
-float kp_inner=1000.0;
-float ki_inner=400.0;
+float kp_inner=20.0;
+float ki_inner=10.0;
 float kd_inner=0.0;
 
-float kp_middle=800.0;
-float ki_middle=400.0;
+float kp_middle=4.0;
+float ki_middle=2.0;
 float kd_middle=0.0;
 
-float kp_outer=800.0;
-float ki_outer=400.0;
+float kp_outer=20.0;
+float ki_outer=10.0;
 float kd_outer=0.0;
 
 uint8_t initializing = 1;
@@ -382,7 +385,7 @@ void TIM3_IRQHandler(void)
 
 		inverse_kinematics(X_ref_temp);
 
-		if( (ack_to_be_sent == 1) && (fabs(X_ref - X_curr) < 0.5)){
+		if( (ack_to_be_sent == 1) && (fabs(X_ref - X_curr) < 0.1)){
 			memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
 			CDC_Transmit_FS(usb_out, sizeof(usb_out));
 			ack_to_be_sent = 0;
@@ -405,96 +408,93 @@ void TIM4_IRQHandler(void)
 
 	if(error_code == 0 && external_shutdown == 0){
 
-	/* Determine PID errors */
-	inner_pos_error = mot_inner_set_pos - enc_inner_pos_cm;
-	middle_pos_error = mot_middle_set_pos - enc_middle_pos_cm;
-	outer_pos_error = mot_outer_set_pos - enc_outer_pos_cm;
+		/* Determine PID errors */
+		inner_pos_error = mot_inner_set_pos - enc_inner_pos;
+		middle_pos_error = mot_middle_set_pos - enc_middle_pos;
+		outer_pos_error = mot_outer_set_pos - enc_outer_pos;
 
-	float inner_der_error=(inner_pos_error-pre_inner_pos_error)*PID_freq;
-	float middle_der_error=(middle_pos_error-pre_middle_pos_error)*PID_freq;
-	float outer_der_error=(outer_pos_error-pre_outer_pos_error)*PID_freq;
+		float inner_der_error=(inner_pos_error-pre_inner_pos_error)*PID_freq;
+		float middle_der_error=(middle_pos_error-pre_middle_pos_error)*PID_freq;
+		float outer_der_error=(outer_pos_error-pre_outer_pos_error)*PID_freq;
 
-	inner_int_error+=inner_pos_error/PID_freq;
-	middle_int_error+=middle_pos_error/PID_freq;
-	outer_int_error+=outer_pos_error/PID_freq;
+		inner_int_error+=inner_pos_error/PID_freq;
+		middle_int_error+=middle_pos_error/PID_freq;
+		outer_int_error+=outer_pos_error/PID_freq;
 
-	if (inner_int_error>=ANTI_WIND_UP) inner_int_error=ANTI_WIND_UP;
-	if (middle_int_error>=ANTI_WIND_UP) middle_int_error=ANTI_WIND_UP;
-	if (outer_int_error>=ANTI_WIND_UP) outer_int_error=ANTI_WIND_UP;
+		if (inner_int_error>=ANTI_WIND_UP) inner_int_error=ANTI_WIND_UP;
+		if (middle_int_error>=ANTI_WIND_UP) middle_int_error=ANTI_WIND_UP;
+		if (outer_int_error>=ANTI_WIND_UP) outer_int_error=ANTI_WIND_UP;
 
-	if (inner_int_error<=-ANTI_WIND_UP) inner_int_error=-ANTI_WIND_UP;
-	if (middle_int_error<=-ANTI_WIND_UP) middle_int_error=-ANTI_WIND_UP;
-	if (outer_int_error<=-ANTI_WIND_UP) outer_int_error=-ANTI_WIND_UP;
+		if (inner_int_error<=-ANTI_WIND_UP) inner_int_error=-ANTI_WIND_UP;
+		if (middle_int_error<=-ANTI_WIND_UP) middle_int_error=-ANTI_WIND_UP;
+		if (outer_int_error<=-ANTI_WIND_UP) outer_int_error=-ANTI_WIND_UP;
 
-	if (((inner_pos_error>0) && (inner_int_error<0))||((inner_pos_error<0) && (inner_int_error>0))) inner_int_error=0;
-	if (((middle_pos_error>0) && (middle_int_error<0))||((middle_pos_error<0) && (middle_int_error>0))) middle_int_error=0;
-	if (((outer_pos_error>0) && (outer_int_error<0))||((outer_pos_error<0) && (outer_int_error>0))) outer_int_error=0;
+		if (((inner_pos_error>0) && (inner_int_error<0))||((inner_pos_error<0) && (inner_int_error>0))) inner_int_error=0;
+		if (((middle_pos_error>0) && (middle_int_error<0))||((middle_pos_error<0) && (middle_int_error>0))) middle_int_error=0;
+		if (((outer_pos_error>0) && (outer_int_error<0))||((outer_pos_error<0) && (outer_int_error>0))) outer_int_error=0;
 
-	pre_inner_pos_error=inner_pos_error;
-	pre_middle_pos_error=middle_pos_error;
-	pre_outer_pos_error=outer_pos_error;
+		pre_inner_pos_error=inner_pos_error;
+		pre_middle_pos_error=middle_pos_error;
+		pre_outer_pos_error=outer_pos_error;
 
-	/* Set the duty (only proportional implemented for now) */
-	duty_inner = (int)(kp_inner*inner_pos_error+kd_inner*inner_der_error+ki_inner*inner_int_error);
-	duty_middle = (int)(kp_middle*middle_pos_error+kd_middle*middle_der_error+ki_middle*middle_int_error);
-	duty_outer = (int)(kp_outer*outer_pos_error+kd_outer*outer_der_error+ki_outer*outer_int_error);
+		/* Set the duty (only proportional implemented for now) */
+		duty_inner = (int)(kp_inner*inner_pos_error+kd_inner*inner_der_error+ki_inner*inner_int_error);
+		duty_middle = (int)(kp_middle*middle_pos_error+kd_middle*middle_der_error+ki_middle*middle_int_error);
+		duty_outer = (int)(kp_outer*outer_pos_error+kd_outer*outer_der_error+ki_outer*outer_int_error);
 
-	/* Set the direction (MOTOR CONNECTIONS REVERSED!!!) */
-	if(duty_inner > 0){
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
-	}
-	else{
-			duty_inner = -duty_inner;
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
-	}
-	if(duty_middle > 0){
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
-	}
-	else{
-			duty_middle = -duty_middle;
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
-	}
-	if(duty_outer > 0){
-			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, LOW);
-			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, HIGH);
-	}
-	else{
-			duty_outer = -duty_outer;
-			HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, LOW);
-			HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, HIGH);
-	}
-
-	/* Limit the duty */
-	if(duty_inner > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
-			duty_inner = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+		/* Set the direction (MOTOR CONNECTIONS REVERSED!!!) */
+		if(duty_inner > 0){
+				HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
+				HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
 		}
-	if(duty_middle > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
-			duty_middle = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+		else{
+				duty_inner = -duty_inner;
+				HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
+				HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
 		}
-	if(duty_outer > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
-			duty_outer = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+		if(duty_middle > 0){
+				HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
+				HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
+		}
+		else{
+				duty_middle = -duty_middle;
+				HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
+				HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
+		}
+		if(duty_outer > 0){
+				HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, LOW);
+				HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, HIGH);
+		}
+		else{
+				duty_outer = -duty_outer;
+				HAL_GPIO_WritePin(GPIOB, IN3_B_Pin, LOW);
+				HAL_GPIO_WritePin(GPIOB, IN3_A_Pin, HIGH);
 		}
 
-	TIM1->CCR1 = duty_inner;
-	TIM1->CCR2 = duty_middle;
-	TIM1->CCR3 = duty_outer;
+		/* Limit the duty */
+		if(duty_inner > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
+				duty_inner = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+			}
+		if(duty_middle > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
+				duty_middle = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+			}
+		if(duty_outer > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
+				duty_outer = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+			}
 
-	// Send acknowledge if the system reaches steady state
-	if (ack_to_be_sent == 1 && fabs(inner_pos_error) <= 0.5 && fabs(middle_pos_error) <= 0.5 && fabs(outer_pos_error) <= 0.5){
-		steady_state_counter++;
-		if(steady_state_counter == 1){
-			forward_kinematics();
+		// Send acknowledge if the system reaches steady state
+		if ((fabs(inner_pos_error) == 0) && (fabs(middle_pos_error) == 0) && (fabs(outer_pos_error) == 0)){
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = 0;
+			TIM1->CCR3 = 0;
+		}
+		else {
+			TIM1->CCR1 = duty_inner;
+			TIM1->CCR2 = duty_middle;
+			TIM1->CCR3 = duty_outer;
 		}
 	}
-	else {
-		steady_state_counter = 0;
-	}
 
-	}
 	else{
 		TIM1->CCR1 = 0;
 		TIM1->CCR2 = 0;
@@ -556,24 +556,26 @@ void OTG_FS_IRQHandler(void)
 		if(usb_in[0] == 'i'){
 			// Since STM32 byte size is 16 bits, there isn't a real uint8_t type
 			// We manually do big endian storage, and manually decode them below here
+			if (initializing == 1){
+				int16_t mot_inner_move_mm = usb_in[1]*256 + usb_in[2];
+				int16_t mot_middle_move_mm = usb_in[3]*256 + usb_in[4];
+				int16_t mot_outer_move_mm = usb_in[5]*256 + usb_in[6];
 
-			int16_t mot_inner_move_mm = usb_in[1]*256 + usb_in[2];
-			int16_t mot_middle_move_mm = usb_in[3]*256 + usb_in[4];
-			int16_t mot_outer_move_mm = usb_in[5]*256 + usb_in[6];
+				// Limit initializing movements to 5 cm
+				if(abs(mot_inner_move_mm) < 50){
+					enc_inner_pos_cm =  - (float)mot_inner_move_mm/10;
+					enc_inner_pos = (float)enc_inner_pos_cm*INNER_GEAR_RATIO;
+				}
+				if(abs(mot_middle_move_mm) < 50){
+					enc_middle_pos_cm =  - (float)mot_middle_move_mm/10;
+					enc_middle_pos = (float)enc_middle_pos_cm*MIDDLE_GEAR_RATIO;
+				}
+				if(abs(mot_outer_move_mm) < 50){
+					enc_outer_pos_cm =  - (float)mot_outer_move_mm/10;
+					enc_outer_pos = (float)enc_outer_pos_cm*OUTER_GEAR_RATIO;
+				}
+			}
 
-			// Limit initializing movements to 5 cm
-			if(abs(mot_inner_move_mm) < 50){
-				enc_inner_pos_cm =  - (float)mot_inner_move_mm/10;
-				enc_inner_pos = (float)enc_inner_pos_cm*INNER_GEAR_RATIO;
-			}
-			if(abs(mot_middle_move_mm) < 50){
-				enc_middle_pos_cm =  - (float)mot_middle_move_mm/10;
-				enc_middle_pos = (float)enc_middle_pos_cm*MIDDLE_GEAR_RATIO;
-			}
-			if(abs(mot_outer_move_mm) < 50){
-				enc_outer_pos_cm =  - (float)mot_outer_move_mm/10;
-				enc_outer_pos = (float)enc_outer_pos_cm*OUTER_GEAR_RATIO;
-			}
 		}
 
 		if(usb_in[0] == 'o'){
@@ -583,28 +585,33 @@ void OTG_FS_IRQHandler(void)
 		if(usb_in[0] == 'b'){
 			// Finish initializing and begin the main process by reseting
 			// motor positions and set values
+			if (initializing == 1){
+				mot_inner_set_pos_cm = 0;
+				mot_middle_set_pos_cm = 0;
+				mot_outer_set_pos_cm = 0;
+				mot_inner_set_pos = 0;
+				mot_middle_set_pos = 0;
+				mot_outer_set_pos = 0;
+				enc_inner_pos_cm = 0;
+				enc_middle_pos_cm = 0;
+				enc_outer_pos_cm = 0;
+				enc_inner_pos = 0;
+				enc_middle_pos = 0;
+				enc_outer_pos = 0;
+				X_ref = 0;
+				X_curr = 0;
+				inner_int_error=0.0;
+				middle_int_error=0.0;
+				outer_int_error=0.0;
+				TIM1->CCR1 = 0;
+				TIM1->CCR2 = 0;
+				TIM1->CCR3 = 0;
+				duty_inner = 0;
+				duty_middle = 0;
+				duty_outer = 0;
+			}
 			initializing = 0;
 
-			mot_inner_set_pos = 0;
-			mot_middle_set_pos = 0;
-			mot_outer_set_pos = 0;
-			enc_inner_pos_cm = 0;
-			enc_middle_pos_cm = 0;
-			enc_outer_pos_cm = 0;
-			enc_inner_pos = 0;
-			enc_middle_pos = 0;
-			enc_outer_pos = 0;
-			X_ref = 0;
-			X_curr = 0;
-			inner_int_error=0.0;
-			middle_int_error=0.0;
-			outer_int_error=0.0;
-			TIM1->CCR1 = 0;
-			TIM1->CCR2 = 0;
-			TIM1->CCR3 = 0;
-			duty_inner = 0;
-			duty_middle = 0;
-			duty_outer = 0;
 		}
 
 	}
