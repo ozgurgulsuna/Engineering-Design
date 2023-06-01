@@ -1,0 +1,11 @@
+../Core/Src/main.c:139:5:main	8	static
+../Core/Src/main.c:197:6:SystemClock_Config	88	static
+../Core/Src/main.c:243:13:MX_TIM1_Init	96	static
+../Core/Src/main.c:326:13:MX_TIM3_Init	32	static
+../Core/Src/main.c:371:13:MX_TIM4_Init	32	static
+../Core/Src/main.c:416:13:MX_GPIO_Init	48	static
+../Core/Src/main.c:474:6:inverse_kinematics	16	static
+../Core/Src/main.c:502:6:forward_kinematics	16	static
+../Core/Src/main.c:514:7:inverse_cos_theorem	40	static
+../Core/Src/main.c:519:7:forward_cos_theorem	24	static
+../Core/Src/main.c:529:6:Error_Handler	8	static,ignoring_inline_asm
