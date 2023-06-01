@@ -15,11 +15,13 @@ import rect_detect_2 as rect_detect
 # Define commands
 move_initialize_command = 'i'
 move_command = 'm'
+move_flag_final = 'f'
+move_flag_partial = 'p'
 shutdown_command = 's'
 error_command = 'e'
 begin_command = 'b'
 zero_command = 'z'
-interpolation_interval = 25
+interpolation_interval = 20
 
 def main():
     # Hello
@@ -77,7 +79,7 @@ def main():
         
         print(sent_message)
         print('')
-        ser_left.write(sent_message)
+        ser_left.write(sent_message) 
 
         # 'y' if initialization should be continued
         left_pole_initialize = input("Continue initializing?: ")
@@ -111,63 +113,87 @@ def main():
         move_x = int(input("Displacement in X axis (in mm): "))
         move_y = int(input("Displacement in Y axis (in mm): "))
         
-        # Send move command w/ interpolation
-        # send move y in the first step of interpolation
-        first_step =int(abs(move_x) % interpolation_interval)
-        if first_step !=0  :
-            if move_x < 0:
-                first_step = -first_step
-            sent_message_right = move_command.encode('utf-8') + first_step.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
-            ser_right.write(sent_message_right)
 
-            move_x_neg = -first_step
-            sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
+        # Send the final X position and move_y
+        sent_message_right = move_command.encode('utf-8') + move_x.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True) + move_flag_final.encode('utf-8')
+        ser_right.write(sent_message_right)
+        """
+        ser_middle.write(sent_message_right)
+        """
+        move_x_neg = -move_x
+        sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True) + move_flag_final.encode('utf-8')
+        ser_left.write(sent_message_left)
+
+        # Send the first partial move command
+        move_x_partial = interpolation_interval
+        sent_message_right = move_command.encode('utf-8') + move_x_partial.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True) + move_flag_partial.encode('utf-8')
+        ser_right.write(sent_message_right)
+        move_x_neg = -move_x_partial
+        sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True) + move_flag_partial.encode('utf-8')
+        ser_left.write(sent_message_left)
+
+        # Wait for acknowledge
+        received_message_right = ser_right.readline().decode('utf-8')
+        print(received_message_right)
+    
+        # If not  acknowledged, shutdown
+        if received_message_right != 'af' and received_message_right != 'ap':
+            pass
+            # sent_message = shutdown_command.encode('utf-8')
+            # ser_right.write(sent_message)
+            # ser_middle.write(sent_message)
+            # ser_left.write(sent_message)
+
+         # Wait for acknowledge
+        received_message_left = ser_left.readline().decode('utf-8')
+        print(received_message_left)
+        
+        # If not acknowledged, shutdown
+        if received_message_left != 'af' and received_message_left != 'ap':
+            pass
+            # sent_message = shutdown_command.encode('utf-8')
+            # ser_right.write(sent_message)
+            # ser_middle.write(sent_message)
+            # ser_left.write(sent_message)
+        
+        # Store the direction
+        move_x_sign = move_x/abs(move_x)
+
+        # Interpolate baby
+        while received_message_left != 'af' and received_message_left == 'ap':
+            # Send the first partial move command
+            move_x_partial = interpolation_interval*move_x_sign
+            sent_message_right = move_command.encode('utf-8') + move_x_partial.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True) + move_flag_partial.encode('utf-8')
+            ser_right.write(sent_message_right)
+            move_x_neg = -move_x_partial
+            sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True) + move_flag_partial.encode('utf-8')
             ser_left.write(sent_message_left)
 
             # Wait for acknowledge
-            received_message = ser_right.readline().decode('utf-8')
-            print(received_message)
-        
-            # If not acknowledged, shutdown
-            if received_message != 'a':
+            received_message_right = ser_right.readline().decode('utf-8')
+            print(received_message_right)
+
+            # If not  acknowledged, shutdown
+            if received_message_right != 'af' and received_message_right != 'ap':
                 pass
                 # sent_message = shutdown_command.encode('utf-8')
                 # ser_right.write(sent_message)
                 # ser_middle.write(sent_message)
                 # ser_left.write(sent_message)
 
-            move_y = 0
-
-        for step in range(int(abs(move_x)/interpolation_interval)):
-            if move_x < 0:
-                interval = -interpolation_interval
-            else:
-                interval = interpolation_interval
-
-            sent_message_right = move_command.encode('utf-8') + interval.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
-            ser_right.write(sent_message_right)
-
-            move_x_neg = -interval
-            sent_message_left = move_command.encode('utf-8') + move_x_neg.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
-            ser_left.write(sent_message_left)
-
-            # Wait for acknowledge
-            received_message = ser_right.readline().decode('utf-8')
-            print(received_message)
+                # Wait for acknowledge
+            received_message_left = ser_left.readline().decode('utf-8')
+            print(received_message_left)
             
             # If not acknowledged, shutdown
-            if received_message != 'a':
+            if received_message_left != 'af' and received_message_left != 'ap':
                 pass
                 # sent_message = shutdown_command.encode('utf-8')
                 # ser_right.write(sent_message)
                 # ser_middle.write(sent_message)
                 # ser_left.write(sent_message)
 
-            if step == 0 :
-                move_y = 0
 
-
-        
         """
         # Wait for acknowledge
         received_message = ser_middle.readline().decode('utf-8')
@@ -181,17 +207,6 @@ def main():
             # ser_middle.write(sent_message)
             # ser_left.write(sent_message)
         """
-        # Wait for acknowledge
-        received_message = ser_left.readline().decode('utf-8')
-        print(received_message)
-        
-        # If not acknowledged, shutdown
-        if received_message != 'a':
-            pass
-            # sent_message = shutdown_command.encode('utf-8')
-            # ser_right.write(sent_message)
-            # ser_middle.write(sent_message)
-            # ser_left.write(sent_message)
         
 
     # ser_right.close()             # close port
