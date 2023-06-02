@@ -84,6 +84,8 @@ extern float Y_ref;
 /* PID related*/
 extern uint32_t PID_freq;
 
+float pos_error1 = 0.0;
+float pos_error2 = 0.0;
 float pre_pos_error1 = 0.0;
 float pre_pos_error2 = 0.0;
 float int_error1 = 0.0;
@@ -270,14 +272,26 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-	/* Check the direction of the first motor */
-	if(HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
-		/* Update the position of the first motor */
-		enc1_pos ++;
-	}else{
-		enc1_pos --;
+	/* Check rising of falling*/
+	if (HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
+		/* high means the interrupt was rising */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
+			/* Update the position of the first motor */
+			enc_inner_pos ++;
+			}else{
+			enc_inner_pos --;
+		}
 	}
-	enc1_pos_cm = (float)enc1_pos/(float)(GEAR_RATIO);
+	if (!HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
+		/* low means the interrupt was falling */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
+			/* Update the position of the first motor */
+			enc_inner_pos --;
+			}else{
+			enc_inner_pos ++;
+		}
+	}
+	enc_inner_pos_cm = (float)enc_inner_pos/(float)(INNER_GEAR_RATIO*2);
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC1_A_Pin);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -291,14 +305,26 @@ void EXTI0_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-	/* Check the direction of the second motor */
-		if(HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
+	/* Check rising of falling*/
+	if (HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
+		/* high means the interrupt was rising */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
 			/* Update the position of the first motor */
-			enc2_pos ++;
-		}else{
-			enc2_pos --;
+			enc_middle_pos ++;
+			}else{
+			enc_middle_pos --;
 		}
-		enc2_pos_cm = (float)enc2_pos/(float)(GEAR_RATIO);
+	}
+	if (!HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
+		/* low means the interrupt was falling */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
+			/* Update the position of the first motor */
+			enc_middle_pos --;
+			}else{
+			enc_middle_pos ++;
+		}
+	}
+	enc_middle_pos_cm = (float)enc_middle_pos/(float)(MIDDLE_GEAR_RATIO*2);
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC2_A_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
@@ -316,8 +342,8 @@ void TIM4_IRQHandler(void)
 	if(error_code == 0 && external_shutdown == 0){
 
 	/* Determine PID errors */
-	float pos_error1 = mot1_set_pos - enc1_pos_cm;
-	float pos_error2 = mot2_set_pos - enc2_pos_cm;
+	pos_error1 = mot1_set_pos - enc1_pos_cm;
+	pos_error2 = mot2_set_pos - enc2_pos_cm;
 
 	float der_error1=(pos_error1-pre_pos_error1)*PID_freq;
 	float der_error2=(pos_error2-pre_pos_error2)*PID_freq;

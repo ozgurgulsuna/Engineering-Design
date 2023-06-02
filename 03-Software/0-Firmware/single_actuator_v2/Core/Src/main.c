@@ -50,9 +50,9 @@
 #define OUTER_SET_LIMIT_MAX 	12
 #define OUTER_SET_LIMIT_MIN 	-4.80
 
-#define INNER_GEAR_RATIO 		40
-#define MIDDLE_GEAR_RATIO 		40*5
-#define OUTER_GEAR_RATIO 		40
+#define INNER_GEAR_RATIO 		80
+#define MIDDLE_GEAR_RATIO 		80*5
+#define OUTER_GEAR_RATIO 		80
 #define DUTY_PERCENTAGE_LIMIT 	0.95
 
 #define	BUF_SIZE	8
@@ -439,7 +439,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : ENC1_A_Pin ENC2_A_Pin ENC3_A_Pin */
   GPIO_InitStruct.Pin = ENC1_A_Pin|ENC2_A_Pin|ENC3_A_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 

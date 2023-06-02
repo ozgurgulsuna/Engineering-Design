@@ -67,6 +67,7 @@ extern float enc_middle_pos_cm;
 extern float mot_inner_set_pos;
 extern float mot_middle_set_pos;
 
+extern char error_message[BUF_SIZE];
 
 /* USER CODE END PV */
 
@@ -337,7 +338,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : ENC1_A_Pin ENC2_A_Pin */
   GPIO_InitStruct.Pin = ENC1_A_Pin|ENC2_A_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -379,6 +380,9 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  // EYVAH
+	  memcpy(&usb_out, &error_message, sizeof(usb_out));
+	  CDC_Transmit_FS(usb_out, sizeof(usb_out));
   }
   /* USER CODE END Error_Handler_Debug */
 }

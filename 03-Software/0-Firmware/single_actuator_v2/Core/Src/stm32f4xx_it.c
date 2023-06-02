@@ -300,14 +300,26 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-	/* Check the direction of the first motor */
-	if(HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
-		/* Update the position of the first motor */
-		enc_inner_pos ++;
-	}else{
-		enc_inner_pos --;
+	/* Check rising of falling*/
+	if (HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
+		/* high means the interrupt was rising */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
+			/* Update the position of the first motor */
+			enc_inner_pos ++;
+			}else{
+			enc_inner_pos --;
+		}
 	}
-	enc_inner_pos_cm = (float)enc_inner_pos/(float)(INNER_GEAR_RATIO);
+	if (!HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
+		/* low means the interrupt was falling */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
+			/* Update the position of the first motor */
+			enc_inner_pos --;
+			}else{
+			enc_inner_pos ++;
+		}
+	}
+	enc_inner_pos_cm = (float)enc_inner_pos/(float)(INNER_GEAR_RATIO*2);
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC1_A_Pin);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -321,14 +333,26 @@ void EXTI0_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
-	/* Check the direction of the second motor */
-		if(HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
+	/* Check rising of falling*/
+	if (HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
+		/* high means the interrupt was rising */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
 			/* Update the position of the first motor */
 			enc_middle_pos ++;
-		}else{
+			}else{
 			enc_middle_pos --;
 		}
-		enc_middle_pos_cm = (float)enc_middle_pos/(float)(MIDDLE_GEAR_RATIO);
+	}
+	if (!HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
+		/* low means the interrupt was falling */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
+			/* Update the position of the first motor */
+			enc_middle_pos --;
+			}else{
+			enc_middle_pos ++;
+		}
+	}
+	enc_middle_pos_cm = (float)enc_middle_pos/(float)(MIDDLE_GEAR_RATIO*2);
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC2_A_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
@@ -342,14 +366,26 @@ void EXTI2_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI4_IRQn 0 */
-	/* Check the direction of the third motor */
-		if(HAL_GPIO_ReadPin(GPIOA, ENC3_B_Pin)){
+	/* Check rising of falling*/
+	if (HAL_GPIO_ReadPin(GPIOA, ENC3_A_Pin)){
+		/* high means the interrupt was rising */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC3_B_Pin)){
 			/* Update the position of the first motor */
 			enc_outer_pos ++;
-		}else{
+			}else{
 			enc_outer_pos --;
 		}
-		enc_outer_pos_cm = (float)enc_outer_pos/(float)(OUTER_GEAR_RATIO);
+	}
+	if (!HAL_GPIO_ReadPin(GPIOA, ENC3_A_Pin)){
+		/* low means the interrupt was falling */
+		if (HAL_GPIO_ReadPin(GPIOA, ENC3_B_Pin)){
+			/* Update the position of the first motor */
+			enc_outer_pos --;
+			}else{
+			enc_outer_pos ++;
+		}
+	}
+	enc_outer_pos_cm = (float)enc_outer_pos/(float)(OUTER_GEAR_RATIO*2);
   /* USER CODE END EXTI4_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC3_A_Pin);
   /* USER CODE BEGIN EXTI4_IRQn 1 */
@@ -385,7 +421,7 @@ void TIM3_IRQHandler(void)
 
 		inverse_kinematics(X_ref_temp);
 
-		if( (ack_to_be_sent == 1) && (fabs(X_ref - X_curr) < 0.1)){
+		if( (ack_to_be_sent == 1) && (fabs(X_ref - X_curr) < 2)){
 			memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
 			CDC_Transmit_FS(usb_out, sizeof(usb_out));
 			ack_to_be_sent = 0;
@@ -543,7 +579,10 @@ void OTG_FS_IRQHandler(void)
 			CDC_Transmit_FS(usb_in,sizeof(usb_in));
 			*/
 
-			X_ref = X_curr + (float)move_x/10.0;
+
+			// X_ref = X_curr + (float)move_x/10.0;
+
+			X_ref = X_ref + (float)move_x/10.0;
 
 			ack_to_be_sent = 1;
 
@@ -564,15 +603,15 @@ void OTG_FS_IRQHandler(void)
 				// Limit initializing movements to 5 cm
 				if(abs(mot_inner_move_mm) < 50){
 					enc_inner_pos_cm =  - (float)mot_inner_move_mm/10;
-					enc_inner_pos = (float)enc_inner_pos_cm*INNER_GEAR_RATIO;
+					enc_inner_pos = (float)enc_inner_pos_cm*INNER_GEAR_RATIO*2;
 				}
 				if(abs(mot_middle_move_mm) < 50){
 					enc_middle_pos_cm =  - (float)mot_middle_move_mm/10;
-					enc_middle_pos = (float)enc_middle_pos_cm*MIDDLE_GEAR_RATIO;
+					enc_middle_pos = (float)enc_middle_pos_cm*MIDDLE_GEAR_RATIO*2;
 				}
 				if(abs(mot_outer_move_mm) < 50){
 					enc_outer_pos_cm =  - (float)mot_outer_move_mm/10;
-					enc_outer_pos = (float)enc_outer_pos_cm*OUTER_GEAR_RATIO;
+					enc_outer_pos = (float)enc_outer_pos_cm*OUTER_GEAR_RATIO*2;
 				}
 			}
 
