@@ -19,20 +19,20 @@ shutdown_command = 's'
 error_command = 'e'
 begin_command = 'b'
 zero_command = 'z'
-interpolation_interval = 25
+interpolation_interval = 5
 
 def main():
     # Hello
     print("Hello World!")
 
     # Establish connection with the serial ports
-    ser_right = serial.Serial('COM9')   # open serial port
+    ser_right = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_338C36623034-if00')   # open serial port
     print(ser_right.name)               # check which port was really used
     """
     ser_middle = serial.Serial('COM11') # open serial port
     print(ser_middle.name)              # check which port was really used
     """
-    ser_left = serial.Serial('COM10')   # open serial port
+    ser_left = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_386739803237-if00')   # open serial port
     print(ser_left.name)                # check which port was really used
     
 
@@ -320,21 +320,6 @@ def initialize_camera():
 def process_background(background_image, background_image_r):
     background_image = cv.cvtColor(background_image, cv.COLOR_BGR2GRAY)
     background_image_r = cv.cvtColor(background_image_r, cv.COLOR_BGR2GRAY)
-
-    # add pole masks before perspective correction####################################################
-    # fixed pole
-    cv.rectangle(background_image,[245,0],[270,140],255,-1)
-    # bottom of movable pole
-    cv.rectangle(background_image,[270,75],[340,140],255,-1)
-    # slave pole can also be eliminated
-
-    # fixed pole
-    cv.rectangle(background_image_r,[245,0],[270,140],255,-1)
-    # bottom of movable pole
-    cv.rectangle(background_image_r,[270,75],[340,140],255,-1)
-    # slave pole can also be eliminated
-
-    ##################################################################################################
 
     background_image = perspective_2.perspective_2(background_image)
     background_image_r = perspective_2.perspective_2(background_image_r)

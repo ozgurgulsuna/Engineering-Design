@@ -475,7 +475,6 @@ int largest_interior_rectangle(int* grid,int* contour,int n_rows, int n_cols,int
         else {return 235;}       
         
 
-        if (i==990)return 54776567;
     }//
     
     if (h_left2right != NULL){free(h_left2right);}

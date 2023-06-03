@@ -1,5 +1,6 @@
 import cv2 as cv
 import multiprocessing
+
 camera1=-1
 camera2=-1
 for i in range(20):
@@ -30,4 +31,6 @@ while(1):
 	if(pressed == ord("q")):
 		cv.destroyAllWindows()
 		break
+	else if(pressed == ord("1")):
+		
 

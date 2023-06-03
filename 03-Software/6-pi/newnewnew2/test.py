@@ -8,7 +8,7 @@ import img_compare
 import perspective_2
 import rect_detect_2 as rect_detect
 import background
-
+import numpy as np
 # necessary to add delays to the system
 import time
 import threading
@@ -26,13 +26,14 @@ def camera_thread_r():
 
 
 # define a video capture object
-vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.3:1.0-video-index0") 
+vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0-video-index0") 
 vid.set(cv.CAP_PROP_SHARPNESS,15)
-vid.set(cv.CAP_PROP_BRIGHTNESS,0)
-vid.set(cv.CAP_PROP_SATURATION,37)                                               # 0 : webcam, to find other cameras, change the number
+vid.set(cv.CAP_PROP_BRIGHTNESS,15)
+vid.set(cv.CAP_PROP_SATURATION,37) 
+vid.set(cv.CAP_PROP_CONTRAST,40)                                               # 0 : webcam, to find other cameras, change the number                                              # 0 : webcam, to find other cameras, change the number
 vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
 vid_r.set(cv.CAP_PROP_SHARPNESS,15)
-vid_r.set(cv.CAP_PROP_BRIGHTNESS,0)
+vid_r.set(cv.CAP_PROP_BRIGHTNESS,30)
 vid_r.set(cv.CAP_PROP_SATURATION,37)
 _, frame = vid.read()
 # background image is added to the system, image is determined in advance during calibration
@@ -45,22 +46,44 @@ background_image_r = cv.cvtColor(background_image_r, cv.COLOR_BGR2GRAY)
 
 # add pole masks before perspective correction####################################################
 # fixed pole
-cv.rectangle(background_image,[245,0],[270,140],255,-1)
+#cv.rectangle(background_image,[245,0],[270,140],255,-1)
 # bottom of movable pole
-cv.rectangle(background_image,[270,75],[340,140],255,-1)
+#cv.rectangle(background_image,[270,75],[340,140],255,-1)
 # slave pole can also be eliminated
 
 # fixed pole
-cv.rectangle(background_image_r,[245,0],[270,140],255,-1)
+#cv.rectangle(background_image_r,[245,0],[270,140],255,-1)
 # bottom of movable pole
-cv.rectangle(background_image_r,[270,75],[340,140],255,-1)
+#cv.rectangle(background_image_r,[270,75],[340,140],255,-1)
 # slave pole can also be eliminated
 
 ##################################################################################################
+##normal
+pts=np.array([[205,135],[166,245],[209,246],[217,209],[291,204],[281,248],[345,240],[343,137],[290,129],[285,160],[240,162],[244,134]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+pts=np.array([[282,0],[284,179],[275,201],[299,220],[322,196],[311,152],[302,3]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+
+##revers
+pts=np.array([[223,154],[187,251],[215,253],[247,153]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+pts=np.array([[302,153],[296,248],[353,250],[347,150]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+pts=np.array([[322,177],[312,0],[301,0],[312,175]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+
 
 
 background_image = perspective_2.perspective_2(background_image)
-background_image_r = perspective_2.perspective_2(background_image_r)
+background_image_r = perspective_2.perspective_2_r(background_image_r)
 time.sleep(1)
 i = 1
 flag=0
@@ -104,7 +127,7 @@ while(1):
         image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         image_r = cv.cvtColor(image_r, cv.COLOR_BGR2GRAY)
         image = perspective_2.perspective_2(image)
-        image_r = perspective_2.perspective_2(image_r)
+        image_r = perspective_2.perspective_2_r(image_r)
         # Display the resulting frame
         #cv.imshow('Image to process', image)
 
@@ -157,7 +180,7 @@ while(1):
         rect_img_r, rect_points_r = queue2.get()
         """
 
-        #cv.imshow('Detected Largest Interior Rectangle', rect_img)
+        cv.imshow('Detected Largest Interior Rectangle', rect_img)
         #cv.waitKey(0)
         per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r)
 

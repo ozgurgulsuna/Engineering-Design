@@ -10,10 +10,10 @@ def perspective_2(img):
     rows,cols = img.shape
 
     # define four points on input image 476,340 1500,340 1918,643 88,643
-    pts1 = np.float32([[170,58],[418,57],[2,389],[598,390]])
+    pts1 = np.float32([[238,140],[457,141],[20,480],[628,480]])
 
     # define the corresponding four points on output image
-    pts2 = np.float32([[161,152],[423,151],[170,475],[450,478]])
+    pts2 = np.float32([[267,270],[429,262],[243,480],[421,480]])
 
     # get the perspective transform matrix
     M = cv.getPerspectiveTransform(pts1,pts2)
