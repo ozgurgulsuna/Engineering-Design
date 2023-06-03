@@ -35,6 +35,8 @@
 #define GEAR_RATIO	40
 #define DUTY_PERCENTAGE_LIMIT 	0.95
 
+#define ANTI_WIND_UP 	40
+
 #define	BUF_SIZE	8
 /* USER CODE END PD */
 
@@ -77,6 +79,8 @@ float enc2_pos_cm = 0;
 /* Position set */
 float mot1_set_pos = 0;
 float mot2_set_pos = 0;
+float mot1_set_pos_cm = 0;
+float mot2_set_pos_cm = 0;
 
 extern float Y_curr;
 extern float Y_ref;
@@ -277,21 +281,21 @@ void EXTI0_IRQHandler(void)
 		/* high means the interrupt was rising */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
 			/* Update the position of the first motor */
-			enc_inner_pos ++;
+			enc1_pos ++;
 			}else{
-			enc_inner_pos --;
+			enc1_pos --;
 		}
 	}
 	if (!HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
 		/* low means the interrupt was falling */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
 			/* Update the position of the first motor */
-			enc_inner_pos --;
+			enc1_pos --;
 			}else{
-			enc_inner_pos ++;
+			enc1_pos ++;
 		}
 	}
-	enc_inner_pos_cm = (float)enc_inner_pos/(float)(INNER_GEAR_RATIO*2);
+	enc1_pos_cm = (float)enc1_pos/(float)(INNER_GEAR_RATIO*2);
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC1_A_Pin);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -310,21 +314,21 @@ void EXTI2_IRQHandler(void)
 		/* high means the interrupt was rising */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
 			/* Update the position of the first motor */
-			enc_middle_pos ++;
+			enc2_pos ++;
 			}else{
-			enc_middle_pos --;
+			enc2_pos --;
 		}
 	}
 	if (!HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
 		/* low means the interrupt was falling */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){
 			/* Update the position of the first motor */
-			enc_middle_pos --;
+			enc2_pos --;
 			}else{
-			enc_middle_pos ++;
+			enc2_pos ++;
 		}
 	}
-	enc_middle_pos_cm = (float)enc_middle_pos/(float)(MIDDLE_GEAR_RATIO*2);
+	enc2_pos_cm = (float)enc2_pos/(float)(MIDDLE_GEAR_RATIO*2);
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC2_A_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
@@ -341,68 +345,80 @@ void TIM4_IRQHandler(void)
 
 	if(error_code == 0 && external_shutdown == 0){
 
-	/* Determine PID errors */
-	pos_error1 = mot1_set_pos - enc1_pos_cm;
-	pos_error2 = mot2_set_pos - enc2_pos_cm;
+		/* Determine set values (NO INVERSE KINEMATICS) */
+		mot1_set_pos_cm = Y_ref;
+		mot2_set_pos_cm = Y_ref;
+		mot1_set_pos = mot1_set_pos_cm*GEAR_RATIO;
+		mot2_set_pos = mot2_set_pos_cm*GEAR_RATIO;
 
-	float der_error1=(pos_error1-pre_pos_error1)*PID_freq;
-	float der_error2=(pos_error2-pre_pos_error2)*PID_freq;
+		/* Determine PID errors */
+		pos_error1 = mot1_set_pos - enc1_pos;
+		pos_error2 = mot2_set_pos - enc2_pos;
 
-	int_error1+=pos_error1/PID_freq;
-	int_error2+=pos_error2/PID_freq;
+		float der_error1=(pos_error1-pre_pos_error1)*PID_freq;
+		float der_error2=(pos_error2-pre_pos_error2)*PID_freq;
 
-	pre_pos_error1=pos_error1;
-	pre_pos_error2=pos_error2;
+		int_error1+=pos_error1/PID_freq;
+		int_error2+=pos_error2/PID_freq;
 
-	/* Set the duty (only proportional implemented for now) */
-	duty1 = (int)(kp1*pos_error1+kd1*der_error1+ki1*int_error1);
-	duty2 = (int)(kp2*pos_error2+kd2*der_error2+ki2*int_error2);
+		if (int_error1>=ANTI_WIND_UP) int_error1=ANTI_WIND_UP;
+		if (int_error2>=ANTI_WIND_UP) int_error2=ANTI_WIND_UP;
 
-	/* Set the direction */
-	if(duty1 > 0){
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
-	}
-	else{
-			duty1 = -duty1;
-			HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
-	}
-	if(duty2 > 0){
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
-	}
-	else{
-			duty2 = -duty2;
-			HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
-			HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
-	}
+		if (int_error1<=-ANTI_WIND_UP) int_error1=-ANTI_WIND_UP;
+		if (int_error2<=-ANTI_WIND_UP) int_error2=-ANTI_WIND_UP;
 
-	/* Limit the duty */
-	if(duty1 > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
-			duty1 = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+		if (((pos_error1>0) && (int_error1<0))||((pos_error1<0) && (int_error1>0))) int_error1=0;
+		if (((pos_error2>0) && (int_error2<0))||((pos_error2<0) && (int_error2>0))) int_error2=0;
+
+		pre_pos_error1=pos_error1;
+		pre_pos_error2=pos_error2;
+
+		/* Set the duty (only proportional implemented for now) */
+		duty1 = (int)(kp1*pos_error1+kd1*der_error1+ki1*int_error1);
+		duty2 = (int)(kp2*pos_error2+kd2*der_error2+ki2*int_error2);
+
+		/* Set the direction */
+		if(duty1 > 0){
+				HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, HIGH);
+				HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, LOW);
 		}
-	if(duty2 > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
-			duty2 = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+		else{
+				duty1 = -duty1;
+				HAL_GPIO_WritePin(GPIOB, IN1_B_Pin, HIGH);
+				HAL_GPIO_WritePin(GPIOB, IN1_A_Pin, LOW);
 		}
-
-	TIM1->CCR1 = duty1;
-	TIM1->CCR2 = duty2;
-
-	// Send acknowledge if the system reaches steady state
-	if (ack_to_be_sent == 1 && pos_error1 == 0){
-		steady_state_counter++;
-		if(steady_state_counter == 1){
-			//forward_kinematics();
+		if(duty2 > 0){
+				HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, HIGH);
+				HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, LOW);
+		}
+		else{
+				duty2 = -duty2;
+				HAL_GPIO_WritePin(GPIOB, IN2_B_Pin, HIGH);
+				HAL_GPIO_WritePin(GPIOB, IN2_A_Pin, LOW);
 		}
 
-		if (steady_state_counter == 255){
-			// forward_kinematics(); X_curr should be updated above, as soon as pos_error1 = 0 !!!
+		/* Limit the duty */
+		if(duty1 > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
+				duty1 = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+			}
+		if(duty2 > ((htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT)){
+				duty2 = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
+			}
+
+		// Set the duty values to zero if steady state is reached
+		if ((fabs(pos1_error) <= 1) &&(fabs(pos1_error) <= 1) && (fabs(pos2_error) <= 1)){
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = 0;
+			if(ack_to_be_sent == 1){
+				memcpy(&usb_out, &acknowledge_message, sizeof(usb_out));
+				CDC_Transmit_FS(usb_out, sizeof(usb_out));
+				ack_to_be_sent = 0;
+			}
 		}
-	}
-	else {
-		steady_state_counter = 0;
-	}
+		else {
+			TIM1->CCR1 = duty1;
+			TIM1->CCR2 = duty2;
+		}
 
 	}
 	else{
@@ -411,6 +427,8 @@ void TIM4_IRQHandler(void)
 		memcpy(&usb_out, &error_message, sizeof(usb_out));
 		CDC_Transmit_FS(usb_out, sizeof(usb_out));
 	}
+
+	Y_curr = (enc1_pos_cm + enc2_pos_cm)/2;
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */

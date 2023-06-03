@@ -32,8 +32,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define MOTOR_SET_LIMIT_MAX 1000 /* WHAT SHOULD BE THE LIMITS??? */
-#define MOTOR_SET_LIMIT_MIN 0
+#define MOTOR_SET_LIMIT_MAX  	35 /* WHAT SHOULD BE THE LIMITS??? */
+#define MOTOR_SET_LIMIT_MIN 	-35
 
 
 #define	BUF_SIZE	8
@@ -60,12 +60,12 @@ float Y_ref = 0;
 float Y_curr = 0;
 
 /* Define and initialize the encoder and motor position variables (pulse counters) */
-extern float enc_inner_pos_cm;
-extern float enc_middle_pos_cm;
+extern float enc1_pos_cm;
+extern float enc1_pos_cm;
 
 /* Position set */
-extern float mot_inner_set_pos;
-extern float mot_middle_set_pos;
+extern float mot1_set_pos;
+extern float mot1_set_pos;
 
 extern char error_message[BUF_SIZE];
 

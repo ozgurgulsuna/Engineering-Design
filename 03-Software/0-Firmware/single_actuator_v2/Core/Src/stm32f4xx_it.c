@@ -518,8 +518,8 @@ void TIM4_IRQHandler(void)
 				duty_outer = (htim1.Init.Period+1)*DUTY_PERCENTAGE_LIMIT;
 			}
 
-		// Send acknowledge if the system reaches steady state
-		if ((fabs(inner_pos_error) == 0) && (fabs(middle_pos_error) == 0) && (fabs(outer_pos_error) == 0)){
+		// Set the duty values to zero if steady state is reached
+		if ((fabs(inner_pos_error) <= 1) && (fabs(middle_pos_error) <= 1) && (fabs(outer_pos_error) <= 1)){
 			TIM1->CCR1 = 0;
 			TIM1->CCR2 = 0;
 			TIM1->CCR3 = 0;
@@ -650,8 +650,16 @@ void OTG_FS_IRQHandler(void)
 				duty_outer = 0;
 			}
 			initializing = 0;
-
 		}
+		// Zero command
+		if(usb_in[0] == 'z'){
+		// Finish initializing and begin the main process by reseting
+		// motor positions and set values
+		if (initializing == 0){
+			// Set X_ref to 0 if zero command is received & not in initializing mode
+			X_ref = 0;
+		}
+	}
 
 	}
 
