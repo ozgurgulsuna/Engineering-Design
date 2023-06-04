@@ -27,14 +27,15 @@ def camera_thread_r():
 
 # define a video capture object
 vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0-video-index0") 
-vid.set(cv.CAP_PROP_SHARPNESS,15)
-vid.set(cv.CAP_PROP_BRIGHTNESS,15)
-vid.set(cv.CAP_PROP_SATURATION,37) 
-vid.set(cv.CAP_PROP_CONTRAST,40)                                               # 0 : webcam, to find other cameras, change the number                                              # 0 : webcam, to find other cameras, change the number
+vid.set(cv.CAP_PROP_SHARPNESS,15)#0 15 2 ##min max default
+vid.set(cv.CAP_PROP_BRIGHTNESS,0)#-64 64 0
+vid.set(cv.CAP_PROP_SATURATION,37)#0 100 37
+vid.set(cv.CAP_PROP_CONTRAST,33)#0 100   33                                     # 0 : webcam, to find other cameras, change the number                                              # 0 : webcam, to find other cameras, change the number
 vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
 vid_r.set(cv.CAP_PROP_SHARPNESS,15)
-vid_r.set(cv.CAP_PROP_BRIGHTNESS,30)
-vid_r.set(cv.CAP_PROP_SATURATION,37)
+vid_r.set(cv.CAP_PROP_BRIGHTNESS,0)
+vid_r.set(cv.CAP_PROP_SATURATION,37) 
+vid_r.set(cv.CAP_PROP_CONTRAST,33) 
 _, frame = vid.read()
 # background image is added to the system, image is determined in advance during calibration
 
@@ -117,6 +118,7 @@ while(1):
             break
         start = time.time()
         frame = cam_result_1
+        
         # Display the resulting frame
         #cv.imshow('Live Video', frame)
         
@@ -132,15 +134,33 @@ while(1):
         #cv.imshow('Image to process', image)
 
         # compare image with background image
+        t=0
         try:
                 cont, cont_img = img_compare.img_compare(background_image, image)
+        except:
+                t=t+1
+                pass
+        try:
                 cont_r, cont_img_r = img_compare.img_compare(background_image_r, image_r)
         except:
-               continue
-        cv.imshow("back",background_image)
-        cv.imshow("img",image)
-        cv.imshow("out",cont_img)
-        cv.waitKey(1)
+               t=t+1
+               pass
+        if t==2:
+                continue
+        try:
+                cv.imshow("back",background_image)
+                cv.imshow("img",image)
+                cv.imshow("out",cont_img)
+                cv.waitKey(1)
+        except:
+                pass
+        try:
+                cv.imshow("back_r",background_image_r)
+                cv.imshow("img_r",image_r)
+                cv.imshow("out_r",cont_img_r)
+                cv.waitKey(1)
+        except: 
+                pass
         #print("cont: ",cont)
         """
         queue1 = multiprocessing.Queue()
@@ -166,9 +186,17 @@ while(1):
         #cv.imshow('Image to process', cont_img)
         #cv.waitKey(0)
         #print("Rect1")
-        rect_img, rect_points = rect_detect.rect_detect(cont,cont_img.shape)
+        try:
+                rect_img, rect_points = rect_detect.rect_detect(cont,cont_img.shape)
+        except:
+                rect_img = np.zeros(background_image.shape,np.uint8)
+                rect_points = np.array([639,479,0,0],dtype=np.int32)
         #print("Rect2")
-        rect_img_r, rect_points_r = rect_detect.rect_detect(cont_r,cont_img_r.shape)
+        try:
+                rect_img_r, rect_points_r = rect_detect.rect_detect(cont_r,cont_img_r.shape)
+        except:
+                rect_img_r = np.zeros(background_image.shape,np.uint8)
+                rect_points_r = np.array([639,479,0,0],dtype=np.int32)
         """
         process3 =multiprocessing.Process(target=rect_detect.rect_detect, args=(cont,cont_img.shape,queue1))
         process4 =multiprocessing.Process(target=rect_detect.rect_detect, args=(cont_r,cont_img_r.shape,queue2))

@@ -52,11 +52,11 @@ def img_compare(first,second):
     """
     for cont in contours:
         #cont=cv.convexHull(cont)
-        epsilon = 4
-        cont=cv.approxPolyDP(cont,epsilon,True)
+        #epsilon = 4
+        #cont=cv.approxPolyDP(cont,epsilon,True)
         mask = np.zeros(second.shape,np.uint8)
         cv.drawContours(mask,[cont],0,255,-1)
-        if cv.contourArea(cont)>(first.shape[0]*first.shape[1]*15/100) and\
+        if cv.contourArea(cont)>(first.shape[0]*first.shape[1]*18/100) and\
         cv.contourArea(cont)<((first.shape[0]-1)*(first.shape[1]-1))\
         and np.mean(second)+10 > cv.mean(second,mask = mask)[0]:
             con_real.append([cont])
@@ -75,11 +75,11 @@ def img_compare(first,second):
     elif len(con_real) == 0: ## area treshold is too big
         con_real=[]
         for cont in contours:
-            epsilon = 4
-            cont=cv.approxPolyDP(cont,epsilon,True)
+            #epsilon = 4
+            #cont=cv.approxPolyDP(cont,epsilon,True)
             mask = np.zeros(second.shape,np.uint8)
             cv.drawContours(mask,[cont],0,255,-1)
-            if cv.contourArea(cont)>(first.shape[0]*first.shape[1]*1/100) and\
+            if cv.contourArea(cont)>(first.shape[0]*first.shape[1]*8/100) and\
             cv.contourArea(cont) < ((first.shape[0]-1)*(first.shape[1]-1))\
             and np.mean(second)+10 > cv.mean(second,mask = mask)[0]:
                 con_real.append([cont])

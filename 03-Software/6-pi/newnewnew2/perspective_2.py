@@ -1,6 +1,8 @@
 # import required libraries
 import cv2 as cv
+import cv2
 import numpy as np
+import os 
 
 
 # can we parametrize this function?
@@ -51,3 +53,23 @@ def perspective_2_r(img):
     dst = cv.warpPerspective(img,M,(cols, rows))
     return dst
 
+##############################################
+# get the path/directory
+folder_dir = "base" #######directorrrrrry
+frames = []
+i=1
+for fid in os.listdir(folder_dir):
+        
+    if (fid.endswith(".jpeg")):
+        cap=cv2.imread("base/"+fid, cv2.IMREAD_COLOR) #######directorrrrrry
+        cv2.imwrite('base/Base{}.jpg'.format(i), perspective_2(cv.cvtColor(cap, cv.COLOR_BGR2GRAY))) #######directorrrrrry
+        i=i+1
+i=1
+folder_dir = "base_r" #######directorrrrrry
+frames_r = []
+for fid in os.listdir(folder_dir):
+        
+    if (fid.endswith(".jpeg")):
+        cap_r=cv2.imread("base/"+fid, cv2.IMREAD_COLOR) #######directorrrrrry
+        cv2.imwrite('base_r/Base_r{}.jpg'.format(i), perspective_2(cv.cvtColor(cap_r, cv.COLOR_BGR2GRAY))) #######directorrrrrry  
+        i=i+1
