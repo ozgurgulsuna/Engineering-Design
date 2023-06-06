@@ -57,7 +57,7 @@ background_image_r = cv.cvtColor(background_image_r, cv.COLOR_BGR2GRAY)
 # bottom of movable pole
 #cv.rectangle(background_image_r,[270,75],[340,140],255,-1)
 # slave pole can also be eliminated
-
+"""
 ##################################################################################################
 ##normal
 pts=np.array([[205,135],[166,245],[209,246],[217,209],[291,204],[281,248],[345,240],[343,137],[290,129],[285,160],[240,162],[244,134]],np.int32)
@@ -79,12 +79,66 @@ cv.fillPoly(background_image_r,[pts],255)
 pts=np.array([[322,177],[312,0],[301,0],[312,175]],np.int32)
 pts=pts.reshape((-1,1,2))
 cv.fillPoly(background_image_r,[pts],255)
+"""
 
+
+
+# background masks before perspective
+# back
+pts=np.array([[208, 137],[236,137],[205,245],[168,244]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+
+pts=np.array([[289,139],[339,139],[344,243],[281,241]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+
+pts=np.array([[285,1],[299,1],[308,145],[291,149]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+
+# back_r
+pts=np.array([[222,149],[250,148],[221,255],[186,256]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+pts=np.array([[300,148],[352,148],[358,252],[294,251]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+pts=np.array([[297,1],[303,170],[320,149],[311,1]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
 
 
 
 background_image = perspective_2.perspective_2(background_image)
 background_image_r = perspective_2.perspective_2_r(background_image_r)
+
+
+
+# background masks after perspective
+# to destroy triangles comes from perspective
+# back triangle
+pts=np.array([[183,405],[230,480],[183,480]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+
+pts=np.array([[456,399],[411,480],[456,480]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image,[pts],255)
+
+# back_r triangle
+pts=np.array([[187,419],[230,480],[187,480]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+pts=np.array([[450,404],[402,480],[450,480]],np.int32)
+pts=pts.reshape((-1,1,2))
+cv.fillPoly(background_image_r,[pts],255)
+
+
+
 time.sleep(1)
 i = 1
 flag=0
@@ -130,6 +184,11 @@ while(1):
         image_r = cv.cvtColor(image_r, cv.COLOR_BGR2GRAY)
         image = perspective_2.perspective_2(image)
         image_r = perspective_2.perspective_2_r(image_r)
+        #CLAHE (constant limited adaptive Histogram Equalization)
+        #clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        #image = clahe.apply(image)
+        #image_r = clahe.apply(image_r)
+        
         # Display the resulting frame
         #cv.imshow('Image to process', image)
 
@@ -209,9 +268,10 @@ while(1):
         """
 
         cv.imshow('Detected Largest Interior Rectangle', rect_img)
+        cv.imshow('Detected Largest Interior Rectangle r', rect_img_r)
         #cv.waitKey(0)
-        per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r)
-
+        x, y = per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r)
+        #x_t=x+x_t
             
         end = time.time()
         print("operation time:", (end - start), "   "   "seconds")

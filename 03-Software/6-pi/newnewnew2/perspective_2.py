@@ -12,10 +12,10 @@ def perspective_2(img):
     rows,cols = img.shape
 
     # define four points on input image 476,340 1500,340 1918,643 88,643
-    pts1 = np.float32([[206,99],[449,98],[137,237],[514,237]])
+    pts1 = np.float32([[206,97],[449,96],[135,236],[516,235]])
 
     # define the corresponding four points on output image
-    pts2 = np.float32([[249,190],[403,190],[249,374],[403,374]])
+    pts2 = np.float32([[230,236],[410,236],[230,382],[410,382]])
 
     # get the perspective transform matrix
     M = cv.getPerspectiveTransform(pts1,pts2)
@@ -36,10 +36,10 @@ def perspective_2_r(img):
     rows,cols = img.shape
 
     # define four points on input image 476,340 1500,340 1918,643 88,643
-    pts1 = np.float32([[207,109],[446,106],[138,245],[519,244]])
+    pts1 = np.float32([[205,109],[444,104],[130,248],[522,248]])
 
     # define the corresponding four points on output image
-    pts2 = np.float32([[207,211],[427,211],[207,376],[427,376]])
+    pts2 = np.float32([[231,268],[406,268],[231,399],[406,399]])
 
     # get the perspective transform matrix
     M = cv.getPerspectiveTransform(pts1,pts2)
@@ -70,6 +70,6 @@ frames_r = []
 for fid in os.listdir(folder_dir):
         
     if (fid.endswith(".jpeg")):
-        cap_r=cv2.imread("base/"+fid, cv2.IMREAD_COLOR) #######directorrrrrry
-        cv2.imwrite('base_r/Base_r{}.jpg'.format(i), perspective_2(cv.cvtColor(cap_r, cv.COLOR_BGR2GRAY))) #######directorrrrrry  
+        cap_r=cv2.imread("base_r/"+fid, cv2.IMREAD_COLOR) #######directorrrrrry
+        cv2.imwrite('base_r/Base_r{}.jpg'.format(i), perspective_2_r(cv.cvtColor(cap_r, cv.COLOR_BGR2GRAY))) #######directorrrrrry  
         i=i+1

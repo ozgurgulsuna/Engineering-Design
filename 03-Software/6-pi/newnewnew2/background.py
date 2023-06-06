@@ -44,7 +44,7 @@ def background(cap,cap_r):
     for fid in os.listdir(folder_dir):
         
         if (fid.endswith(".jpeg")):
-            cap_r=cv2.imread("back/"+fid, cv2.IMREAD_COLOR) #######directorrrrrry
+            cap_r=cv2.imread("back_r/"+fid, cv2.IMREAD_COLOR) #######directorrrrrry
             frames_r.append(cap_r)
     # Calculate the median along the time axis
     medianFrame = np.median(frames, axis=0).astype(dtype=np.uint8)

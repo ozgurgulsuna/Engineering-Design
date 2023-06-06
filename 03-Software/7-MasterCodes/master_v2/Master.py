@@ -105,6 +105,14 @@ def main():
     time.sleep(1)
     """
     
+    """
+    global x_t
+    global y_t
+    
+    x_t=0
+    y_t=0
+    
+    """
     while True:
         
         # move_x, move_y = get_xy(background_image, background_image_r)
@@ -215,6 +223,9 @@ def main():
 """
 # This function will include the whole python code for running image processing to extract move_x & move_y
 def get_xy(background_image, background_image_r):
+    global x_t
+    global y_t
+
     start = time.time()
     # frame = cam_result_1
     # Display the resulting frame
@@ -231,17 +242,34 @@ def get_xy(background_image, background_image_r):
     # Display the resulting frame
     # cv.imshow('Image to process', image)
 
-    # Compare image with background image
+    # compare image with background image
+    t=0
     try:
-        cont, cont_img = img_compare.img_compare(background_image, image)
-        cont_r, cont_img_r = img_compare.img_compare(background_image_r, image_r)
+            cont, cont_img = img_compare.img_compare(background_image, image)
     except:
-        pass # IS IT LEGIT?
-    cv.imshow("back",background_image)
-    cv.imshow("img",image)
-    cv.imshow("out",cont_img)
-    cv.waitKey(1)
-    #print("cont: ",cont)
+            t=t+1
+            pass
+    try:
+            cont_r, cont_img_r = img_compare.img_compare(background_image_r, image_r)
+    except:
+           t=t+1
+           pass
+    if t==2:
+            continue
+    try:
+            cv.imshow("back",background_image)
+            cv.imshow("img",image)
+            cv.imshow("out",cont_img)
+            cv.waitKey(1)
+    except:
+            pass
+    try:
+            cv.imshow("back_r",background_image_r)
+            cv.imshow("img_r",image_r)
+            cv.imshow("out_r",cont_img_r)
+            cv.waitKey(1)
+    except: 
+            pass
     
     #print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
 
@@ -250,20 +278,39 @@ def get_xy(background_image, background_image_r):
     #_,thresh=cv.threshold(cont_img, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     #pers_cont, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-    # Largest interior rectange detection
-    #cv.imshow('Image to process', cont_img)
-    #cv.waitKey(0)
-    #print("Rect1")
-    rect_img, rect_points = rect_detect.rect_detect(cont,cont_img.shape)
+    try:
+            rect_img, rect_points = rect_detect.rect_detect(cont,cont_img.shape)
+    except:
+            rect_img = np.zeros(background_image.shape,np.uint8)
+            rect_points = np.array([639,479,0,0],dtype=np.int32)
     #print("Rect2")
-
-    # rect_img_r not used, relax
-    rect_img_r, rect_points_r = rect_detect.rect_detect(cont_r,cont_img_r.shape)
+    try:
+            rect_img_r, rect_points_r = rect_detect.rect_detect(cont_r,cont_img_r.shape)
+    except:
+            rect_img_r = np.zeros(background_image.shape,np.uint8)
+            rect_points_r = np.array([639,479,0,0],dtype=np.int32)
 
     #cv.imshow('Detected Largest Interior Rectangle', rect_img)
     #cv.waitKey(0)
     delta_x, delta_y = per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r)
-
+    
+    # limitations
+    x_limit_ref = 250
+    if(x_t+delta_x < x_limit_ref and x_t+delta_x > -x_limit_ref):
+        x_t=x_t+delta_x
+    else:
+        delta_x = (x_t+delta_x >= x_limit_ref) ? (x_limit_ref-x_t) : (-x_limit_ref-x_t)
+        x_t = (x_t+delta_x >= x_limit_ref) ? (x_limit_ref) : (-x_limit_ref)
+        
+    # y fix #################################################################################################################################################################
+    y_limit_ref = 450
+    
+    if(y_t+delta_y < y_limit_ref and y_t+delta_y > -y_limit_ref):
+        y_t=y_t+delta_y
+    else:
+        delta_y = (y_t+delta_y >= y_limit_ref) ? (y_limit_ref-y_t) : (-y_limit_ref-y_t)
+        y_t = (y_t+delta_y >= y_limit_ref) ? (y_limit_ref) : (-y_limit_ref)
+        
         
     end = time.time()
     print("operation time:", (end - start), "   "   "seconds")
@@ -320,9 +367,56 @@ def initialize_camera():
 def process_background(background_image, background_image_r):
     background_image = cv.cvtColor(background_image, cv.COLOR_BGR2GRAY)
     background_image_r = cv.cvtColor(background_image_r, cv.COLOR_BGR2GRAY)
+    
+    # background masks before perspective
+    # back
+    pts=np.array([[208, 137],[236,137],[205,245],[168,244]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image,[pts],255)
+
+    pts=np.array([[289,139],[339,139],[344,243],[281,241]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image,[pts],255)
+
+    pts=np.array([[285,1],[299,1],[308,145],[291,149]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image,[pts],255)
+
+    # back_r
+    pts=np.array([[222,149],[250,148],[221,255],[186,256]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image_r,[pts],255)
+
+    pts=np.array([[300,148],[352,148],[358,252],[294,251]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image_r,[pts],255)
+
+    pts=np.array([[297,1],[303,170],[320,149],[311,1]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image_r,[pts],255)
 
     background_image = perspective_2.perspective_2(background_image)
     background_image_r = perspective_2.perspective_2(background_image_r)
+    
+    # background masks after perspective
+    # to destroy triangles comes from perspective
+    # back triangle
+    pts=np.array([[182,407],[228,479],[182,479]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image,[pts],255)
+
+    pts=np.array([[455,402],[410,479],[372,479],[455,479]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image,[pts],255)
+
+    # back_r triangle
+    pts=np.array([[189,426],[231,479],[189,479]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image_r,[pts],255)
+
+    pts=np.array([[450,400],[404,477],[280,479],[450,479]],np.int32)
+    pts=pts.reshape((-1,1,2))
+    cv.fillPoly(background_image_r,[pts],255)
 
     return background_image, background_image_r
     
