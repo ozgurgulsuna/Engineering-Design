@@ -56,6 +56,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 top_actuator.list \
 
+OBJCOPY_HEX += \
+top_actuator.hex \
+
+OBJCOPY_BIN += \
+top_actuator.bin \
+
 
 # All Target
 all: main-build
@@ -79,12 +85,22 @@ top_actuator.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+top_actuator.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "top_actuator.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+top_actuator.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "top_actuator.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) default.size.stdout top_actuator.elf top_actuator.list top_actuator.map
+	-$(RM) default.size.stdout top_actuator.bin top_actuator.elf top_actuator.hex top_actuator.list top_actuator.map
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

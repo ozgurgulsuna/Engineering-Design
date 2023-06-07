@@ -490,8 +490,11 @@ void inverse_kinematics(float X_ref_temp){
 	mot_outer_set_pos_cm = d_outer_ref - D_OUTER_OFFSET;
 
 	if ((mot_inner_set_pos_cm > INNER_SET_LIMIT_MAX) || (mot_inner_set_pos_cm < INNER_SET_LIMIT_MIN)) error_code ='r';
+	else error_code = 0;
 	if ((mot_middle_set_pos_cm > MIDDLE_SET_LIMIT_MAX) || (mot_middle_set_pos_cm < MIDDLE_SET_LIMIT_MIN)) error_code ='r';
+	else error_code = 0;
 	if ((mot_outer_set_pos_cm > OUTER_SET_LIMIT_MAX) || (mot_outer_set_pos_cm < OUTER_SET_LIMIT_MIN)) error_code ='r';
+	else error_code = 0;
 
 	// Determine motor position reference values (everything in cm)
 	mot_inner_set_pos = (int)(mot_inner_set_pos_cm*INNER_GEAR_RATIO);

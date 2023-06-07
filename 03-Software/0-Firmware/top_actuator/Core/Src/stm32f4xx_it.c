@@ -32,7 +32,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define GEAR_RATIO	40
+#define GEAR_RATIO	80
 #define DUTY_PERCENTAGE_LIMIT 	0.95
 
 #define ANTI_WIND_UP 	40
@@ -96,11 +96,11 @@ float int_error1 = 0.0;
 float int_error2 = 0.0;
 
 float kp1 = 10.0;
-float ki1 = 0.0;
+float ki1 = 5.0;
 float kd1 = 0.0;
 
 float kp2 = 10.0;
-float ki2 = 0.0;
+float ki2 = 5.0;
 float kd2 = 0.0;
 
 
@@ -295,7 +295,7 @@ void EXTI0_IRQHandler(void)
 			enc1_pos ++;
 		}
 	}
-	enc1_pos_cm = (float)enc1_pos/(float)(INNER_GEAR_RATIO*2);
+	enc1_pos_cm = (float)enc1_pos/(float)(GEAR_RATIO);
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC1_A_Pin);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -328,7 +328,7 @@ void EXTI2_IRQHandler(void)
 			enc2_pos ++;
 		}
 	}
-	enc2_pos_cm = (float)enc2_pos/(float)(MIDDLE_GEAR_RATIO*2);
+	enc2_pos_cm = (float)enc2_pos/(float)(GEAR_RATIO);
   /* USER CODE END EXTI2_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(ENC2_A_Pin);
   /* USER CODE BEGIN EXTI2_IRQn 1 */
@@ -348,12 +348,12 @@ void TIM4_IRQHandler(void)
 		/* Determine set values (NO INVERSE KINEMATICS) */
 		mot1_set_pos_cm = Y_ref;
 		mot2_set_pos_cm = Y_ref;
-		mot1_set_pos = mot1_set_pos_cm*GEAR_RATIO;
-		mot2_set_pos = mot2_set_pos_cm*GEAR_RATIO;
+		mot1_set_pos = (int)(mot1_set_pos_cm*GEAR_RATIO);
+		mot2_set_pos = (int)(mot2_set_pos_cm*GEAR_RATIO);
 
 		/* Determine PID errors */
-		pos_error1 = mot1_set_pos - enc1_pos;
-		pos_error2 = mot2_set_pos - enc2_pos;
+		pos_error1 = mot1_set_pos - enc2_pos;
+		pos_error2 = mot2_set_pos - enc1_pos;
 
 		float der_error1=(pos_error1-pre_pos_error1)*PID_freq;
 		float der_error2=(pos_error2-pre_pos_error2)*PID_freq;
@@ -406,7 +406,7 @@ void TIM4_IRQHandler(void)
 			}
 
 		// Set the duty values to zero if steady state is reached
-		if ((fabs(pos1_error) <= 1) &&(fabs(pos1_error) <= 1) && (fabs(pos2_error) <= 1)){
+		if ((fabs(pos_error1) <= 5) && (fabs(pos_error2) <= 5)){
 			TIM1->CCR1 = 0;
 			TIM1->CCR2 = 0;
 			if(ack_to_be_sent == 1){
@@ -467,7 +467,7 @@ void OTG_FS_IRQHandler(void)
 			CDC_Transmit_FS(usb_in,sizeof(usb_in));
 			*/
 
-			Y_ref = Y_curr + (float)move_y/10;
+			Y_ref = Y_ref + (float)move_y/10;
 
 			ack_to_be_sent = 1;
 

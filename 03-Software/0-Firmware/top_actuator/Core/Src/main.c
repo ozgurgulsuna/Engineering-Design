@@ -118,14 +118,18 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
+  // Store the frequency of PID loop
+  PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
+
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim1);
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
-  // Store the frequency of PID loop
-  PID_freq = HAL_RCC_GetSysClockFreq()/htim4.Init.Period;
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -207,7 +211,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 4799;
+  htim1.Init.Period = 959;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -339,13 +343,13 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : ENC1_A_Pin ENC2_A_Pin */
   GPIO_InitStruct.Pin = ENC1_A_Pin|ENC2_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ENC1_B_Pin ENC2_B_Pin */
   GPIO_InitStruct.Pin = ENC1_B_Pin|ENC2_B_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : IN1_A_Pin IN1_B_Pin IN2_A_Pin IN2_B_Pin */

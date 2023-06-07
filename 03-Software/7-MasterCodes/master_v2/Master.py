@@ -24,17 +24,27 @@ interpolation_interval = 25
 def main():
     # Hello
     print("Hello World!")
-
+    
     # Establish connection with the serial ports
     ser_right = serial.Serial('COM9')   # open serial port
-    print(ser_right.name)               # check which port was really used
-    """
-    ser_middle = serial.Serial('COM11') # open serial port
+    print(ser_right.name)               # ycheck which port was really used
+    
+    ser_middle = serial.Serial('COM7') # open serial port
     print(ser_middle.name)              # check which port was really used
-    """
+    
     ser_left = serial.Serial('COM10')   # open serial port
     print(ser_left.name)                # check which port was really used
     
+    
+    # Send a message to set the X reference values to 0
+    send_zero_command = input("Send zero command ('y' if 'yes')?: ")
+    if send_zero_command == 'y':
+        sent_message = zero_command.encode('utf-8')
+        print(sent_message)
+        print('')
+        
+        ser_right.write(sent_message)
+        ser_left.write(sent_message)
 
     # Start initializing the system by moving it manually
     right_pole_initialize = input("Start initializing right pole ('y' if 'yes')?: ")
@@ -111,12 +121,19 @@ def main():
         move_x = int(input("Displacement in X axis (in mm): "))
         move_y = int(input("Displacement in Y axis (in mm): "))
         
+        sent_message_right = move_command.encode('utf-8') + move_x.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
+        ser_middle.write(sent_message_right)
+
+       
+
+        
         # Send move command w/ interpolation
         # send move y in the first step of interpolation
         first_step =int(abs(move_x) % interpolation_interval)
         if first_step !=0  :
             if move_x < 0:
                 first_step = -first_step
+            
             sent_message_right = move_command.encode('utf-8') + first_step.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
             ser_right.write(sent_message_right)
 
@@ -189,11 +206,9 @@ def main():
 
             if step == 0 :
                 move_y = 0
-
-
-
         
-        """
+
+
         # Wait for acknowledge
         received_message = ser_middle.readline().decode('utf-8')
         print(received_message)
@@ -205,7 +220,6 @@ def main():
             # ser_right.write(sent_message)
             # ser_middle.write(sent_message)
             # ser_left.write(sent_message)
-        """
         
 
     # ser_right.close()             # close port

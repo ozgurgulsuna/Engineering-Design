@@ -41,7 +41,7 @@
 double INTERPOLATION_INTERVAL=0.5; // (0.5 cm per interval)
 
 #define	BUF_SIZE	 	8
-#define ANTI_WIND_UP 	40
+#define ANTI_WIND_UP 	80
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -583,6 +583,12 @@ void OTG_FS_IRQHandler(void)
 			// X_ref = X_curr + (float)move_x/10.0;
 
 			X_ref = X_ref + (float)move_x/10.0;
+			if (X_ref > 25){
+				X_ref = 25;
+			}
+			if (X_ref < -25){
+				X_ref = -25;
+			}
 
 			ack_to_be_sent = 1;
 
