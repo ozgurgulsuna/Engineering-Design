@@ -111,6 +111,8 @@ pts=pts.reshape((-1,1,2))
 cv.fillPoly(background_image_r,[pts],255)
 
 
+#background_image=255*np.ones(background_image.shape,np.uint8)
+#background_image_r=255*np.ones(background_image.shape,np.uint8)
 
 background_image = perspective_2.perspective_2(background_image)
 background_image_r = perspective_2.perspective_2_r(background_image_r)
@@ -193,6 +195,7 @@ while(1):
         #cv.imshow('Image to process', image)
 
         # compare image with background image
+        
         t=0
         try:
                 cont, cont_img = img_compare.img_compare(background_image, image)
@@ -202,8 +205,8 @@ while(1):
         try:
                 cont_r, cont_img_r = img_compare.img_compare(background_image_r, image_r)
         except:
-               t=t+1
-               pass
+                t=t+1
+                pass
         if t==2:
                 continue
         try:

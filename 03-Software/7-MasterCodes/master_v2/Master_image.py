@@ -21,11 +21,10 @@ begin_command = 'b'
 zero_command = 'z'
 interpolation_interval = 5
 
-
 def main():
     # Hello
     print("Hello World!")
-    
+    """
     # Establish connection with the serial ports
     ser_right = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_338C36623034-if00')   # open serial port
     print(ser_right.name)               # check which port was really used
@@ -36,7 +35,7 @@ def main():
     ser_left = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_386739803237-if00')   # open serial port
     print(ser_left.name)                # check which port was really used
     
-    """
+    
     # Send zero command
     send_zero_command = input("Send zero command ('y' if 'yes')?: ")
     
@@ -46,9 +45,6 @@ def main():
         print('')
         ser_right.write(sent_message)
         ser_left.write(sent_message)
-    
-    """
-    
     
     # Start initializing the system by moving it manually
     right_pole_initialize = input("Start initializing right pole ('y' if 'yes')?: ")
@@ -69,7 +65,11 @@ def main():
         # 'y' if initialization should be continued
         right_pole_initialize = input("Continue initializing?: ")
     
-    
+    # Send command to set the motor position related values to 0
+    sent_message = begin_command.encode('utf-8')
+    print(sent_message)
+    print('')
+    ser_right.write(sent_message)
     
     
     
@@ -92,17 +92,13 @@ def main():
         # 'y' if initialization should be continued
         left_pole_initialize = input("Continue initializing?: ")
     
-    # Send command to set the motor position related values to 0
-    sent_message = begin_command.encode('utf-8')
-    print(sent_message)
-    print('')
-    ser_right.write(sent_message)
-    
     # Send command to set the motor positio related values to 0
     sent_message = begin_command.encode('utf-8')
     print(sent_message)
     print('')
     ser_left.write(sent_message)
+    
+    """
     
     # Initialize cameras, take background pictures, etc.
     initialize_camera()
@@ -122,10 +118,6 @@ def main():
     i = 1
     flag=0
     # repeat the same operation steps until the operation is terminated
-    global cam_result_1
-    global cam_result_2
-    _, cam_result_1 = vid.read()
-    _, cam_result_2 = vid_r.read()
     threading.Thread(target=camera_thread).start()
     threading.Thread(target=camera_thread_r).start()
     time.sleep(1)
@@ -138,46 +130,14 @@ def main():
     x_t=0
     y_t=0
     
-    move_x_array=[0,0,0,0,0]
-    move_y_array=[0,0,0,0,0]
+    
     while True:
-        for i in range(5):
-            move_x_array[i], move_y_array[i] = get_xy(background_image, background_image_r)
-        move_x=int(np.median(move_x_array))
-        move_y=int(np.median(move_y_array))
         
-        # limitations
-        if abs(move_x) < 12:
-            move_x = 0
-        
-        if abs(move_y) < 12:
-            move_y = 0
-        
-        
-        x_limit_ref = 250
-        if(x_t+move_x < x_limit_ref and x_t+move_x > -x_limit_ref):
-            x_t=x_t+move_x
-        else:
-            delta_x = (x_t+move_x >= x_limit_ref) if (x_limit_ref-x_t) else (-x_limit_ref-x_t)
-            x_t = (x_t+move_x >= x_limit_ref) if (x_limit_ref) else (-x_limit_ref)
-            
-        # y fix #################################################################################################################################################################
-        y_limit_ref = 350
-        
-        if(y_t+move_y < y_limit_ref and y_t+move_y > -y_limit_ref):
-            y_t=y_t+move_y
-        else:
-            delta_y = (y_t+move_y >= y_limit_ref) if (y_limit_ref-y_t) else (-y_limit_ref-y_t)
-            y_t = (y_t+move_y >= y_limit_ref) if (y_limit_ref) else (-y_limit_ref)
-            
-        
-        print("canopy movement in x direction ",move_x,"mm")
-        print("canopy movement in y direction ",move_y,"mm")
+        move_x, move_y = get_xy(background_image, background_image_r)
         
         """
         move_x = int(input("Displacement in X axis (in mm): "))
         move_y = int(input("Displacement in Y axis (in mm): "))
-        """
         
         sent_message_middle = move_command.encode('utf-8') + move_x.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
         ser_middle.write(sent_message_middle)
@@ -284,7 +244,7 @@ def main():
     # ser_right.close()             # close port
     # ser_middle.close()             # close port
     # ser_left.close()             # close port
-    
+    """
 
 # This function will include the whole python code for running image processing to extract move_x & move_y
 def get_xy(background_image, background_image_r):
@@ -368,8 +328,8 @@ def get_xy(background_image, background_image_r):
     if(x_t+delta_x < x_limit_ref and x_t+delta_x > -x_limit_ref):
         x_t=x_t+delta_x
     else:
-        delta_x = (x_t+delta_x >= x_limit_ref) if (x_limit_ref-x_t) else (-x_limit_ref-x_t)
-        x_t = (x_t+delta_x >= x_limit_ref) if (x_limit_ref) else (-x_limit_ref)
+        delta_x = (x_t+delta_x >= x_limit_ref) ? (x_limit_ref-x_t) : (-x_limit_ref-x_t)
+        x_t = (x_t+delta_x >= x_limit_ref) ? (x_limit_ref) : (-x_limit_ref)
         
     # y fix #################################################################################################################################################################
     y_limit_ref = 350
@@ -377,10 +337,10 @@ def get_xy(background_image, background_image_r):
     if(y_t+delta_y < y_limit_ref and y_t+delta_y > -y_limit_ref):
         y_t=y_t+delta_y
     else:
-        delta_y = (y_t+delta_y >= y_limit_ref) if (y_limit_ref-y_t) else (-y_limit_ref-y_t)
-        y_t = (y_t+delta_y >= y_limit_ref) if (y_limit_ref) else (-y_limit_ref)
-    """   
-    
+        delta_y = (y_t+delta_y >= y_limit_ref) ? (y_limit_ref-y_t) : (-y_limit_ref-y_t)
+        y_t = (y_t+delta_y >= y_limit_ref) ? (y_limit_ref) : (-y_limit_ref)
+        
+    """
     
     end = time.time()
     print("operation time:", (end - start), "   "   "seconds")
@@ -496,30 +456,15 @@ def process_background(background_image, background_image_r):
 # Some weird mehmetcan fixes
 def camera_thread():
         global cam_result_1
-        _, cam_result_3a = vid.read()
-        cam_result_3=[cam_result_3a,cam_result_3a,cam_result_3a,cam_result_3a,cam_result_3a]
         while(1):
-                _, cam_result_3[0] = vid.read()
-                _, cam_result_3[1] = vid.read()
-                _, cam_result_3[2] = vid.read()
-                _, cam_result_3[3] = vid.read()
-                _, cam_result_3[4] = vid.read()
-                cam_result_1=np.median(cam_result_3, axis=0).astype(dtype=np.uint8)
-                cv.imshow('Live Video', cam_result_1)
+                _, cam_result_1 = vid.read()
+                cv.imshow('Live Video', frame)
                 cv.waitKey(1)
 def camera_thread_r():
         global cam_result_2
-        _, cam_result_3a = vid_r.read()
-        cam_result_3=[cam_result_3a,cam_result_3a,cam_result_3a,cam_result_3a,cam_result_3a]
         while(1):
-                _, cam_result_3[0] = vid_r.read()
-                _, cam_result_3[1] = vid_r.read()
-                _, cam_result_3[2] = vid_r.read()
-                _, cam_result_3[3] = vid_r.read()
-                _, cam_result_3[4] = vid_r.read()
-                cam_result_2=np.median(cam_result_3, axis=0).astype(dtype=np.uint8)
+                _, cam_result_2 = vid_r.read()
 
 
 if __name__ == "__main__":
-    
     main()

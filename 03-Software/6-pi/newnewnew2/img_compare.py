@@ -8,9 +8,8 @@ def img_compare(first,second):
     # to save images, define variable
     i = 6
     
-    
-    first = cv.GaussianBlur(first,(5,5),0)
-    second = cv.GaussianBlur(second,(5,5),0)
+    first = cv.medianBlur(first,11)
+    second = cv.medianBlur(second,11)
     #first = cv.bileateralFilter(first,9,75,75)
     
     #print(np.mean(first))
@@ -20,10 +19,9 @@ def img_compare(first,second):
     
     #cv.waitKey(0) 
 
-  
     diff=cv.absdiff(first,second)
-
     a,thresh_b=cv.threshold(diff, 50, 255,cv.THRESH_OTSU +  cv.THRESH_BINARY  )
+
     """
     cv.imwrite("images/thresh_b_{}.jpeg".format(i),thresh_b)
     cv.imshow("tresh_b",thresh_b)
@@ -52,8 +50,8 @@ def img_compare(first,second):
     """
     for cont in contours:
         #cont=cv.convexHull(cont)
-        #epsilon = 4
-        #cont=cv.approxPolyDP(cont,epsilon,True)
+        epsilon = 0.5
+        cont=cv.approxPolyDP(cont,epsilon,True)
         mask = np.zeros(second.shape,np.uint8)
         cv.drawContours(mask,[cont],0,255,-1)
         if cv.contourArea(cont)>(first.shape[0]*first.shape[1]*18/100) and\
@@ -75,8 +73,8 @@ def img_compare(first,second):
     elif len(con_real) == 0: ## area treshold is too big
         con_real=[]
         for cont in contours:
-            #epsilon = 4
-            #cont=cv.approxPolyDP(cont,epsilon,True)
+            epsilon = 0.5
+            cont=cv.approxPolyDP(cont,epsilon,True)
             mask = np.zeros(second.shape,np.uint8)
             cv.drawContours(mask,[cont],0,255,-1)
             if cv.contourArea(cont)>(first.shape[0]*first.shape[1]*8/100) and\

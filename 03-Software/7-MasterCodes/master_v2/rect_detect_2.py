@@ -19,7 +19,7 @@ def rect_detect(conts,shape):
     # Create our mask by selecting the non-zero values of the picture
     # Select the contour
     # if your mask is incurved or if you want better results, 
-    # you may want to use cv.CHAIN_APPROX_NONE instead of cv.CHAIN_APPROX_SIMPLE, 
+    # you may want to use cv2.CHAIN_APPROX_NONE instead of cv2.CHAIN_APPROX_SIMPLE, 
     # but the rectangle search will be longer
     recto=[]
     blank=np.zeros(shape,dtype="uint8")
