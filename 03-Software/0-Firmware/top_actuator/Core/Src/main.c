@@ -61,11 +61,11 @@ float Y_curr = 0;
 
 /* Define and initialize the encoder and motor position variables (pulse counters) */
 extern float enc1_pos_cm;
-extern float enc1_pos_cm;
+extern float enc2_pos_cm;
 
 /* Position set */
 extern float mot1_set_pos;
-extern float mot1_set_pos;
+extern float mot2_set_pos;
 
 extern char error_message[BUF_SIZE];
 
