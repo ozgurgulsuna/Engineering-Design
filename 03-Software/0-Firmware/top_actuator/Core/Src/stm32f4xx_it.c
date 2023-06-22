@@ -277,22 +277,23 @@ void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
 	/* Check rising of falling*/
+	for(int i = 0;i<100; i++);
 	if (HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
 		/* high means the interrupt was rising */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
 			/* Update the position of the first motor */
-			enc1_pos ++;
-			}else{
 			enc1_pos --;
+			}else{
+			enc1_pos ++;
 		}
 	}
 	if (!HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
 		/* low means the interrupt was falling */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC1_B_Pin)){
 			/* Update the position of the first motor */
-			enc1_pos --;
-			}else{
 			enc1_pos ++;
+			}else{
+			enc1_pos --;
 		}
 	}
 	enc1_pos_cm = (float)enc1_pos/(float)(GEAR_RATIO);
@@ -310,6 +311,7 @@ void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
 	/* Check rising of falling*/
+	for(int i = 0;i<100; i++);
 	if (HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
 		/* high means the interrupt was rising */
 		if (HAL_GPIO_ReadPin(GPIOA, ENC2_B_Pin)){

@@ -124,6 +124,8 @@ def main():
         sent_message_right = move_command.encode('utf-8') + move_x.to_bytes(2, 'big', signed = True) + move_y.to_bytes(2, 'big', signed = True)
         ser_middle.write(sent_message_right)
 
+        continue
+
        
 
         
@@ -206,6 +208,7 @@ def main():
 
             if step == 0 :
                 move_y = 0
+
         
 
 

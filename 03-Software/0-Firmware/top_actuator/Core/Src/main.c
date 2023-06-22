@@ -32,8 +32,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define MOTOR_SET_LIMIT_MAX  	35 /* WHAT SHOULD BE THE LIMITS??? */
-#define MOTOR_SET_LIMIT_MIN 	-35
+#define MOTOR_SET_LIMIT_MAX  	32 /* WHAT SHOULD BE THE LIMITS??? */
+#define MOTOR_SET_LIMIT_MIN 	-32
 
 
 #define	BUF_SIZE	8

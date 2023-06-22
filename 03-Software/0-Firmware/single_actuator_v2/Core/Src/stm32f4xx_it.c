@@ -300,6 +300,8 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
+	// DELAY RULES THE WORLD
+	for(int i = 0;i<100; i++);
 	/* Check rising of falling*/
 	if (HAL_GPIO_ReadPin(GPIOA, ENC1_A_Pin)){
 		/* high means the interrupt was rising */
@@ -333,6 +335,8 @@ void EXTI0_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI2_IRQn 0 */
+	// DELAY RULES THE WORLD
+	for(int i = 0;i<100; i++);
 	/* Check rising of falling*/
 	if (HAL_GPIO_ReadPin(GPIOA, ENC2_A_Pin)){
 		/* high means the interrupt was rising */
@@ -366,6 +370,8 @@ void EXTI2_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI4_IRQn 0 */
+	// DELAY RULES THE WORLD
+	for(int i = 0;i<100; i++);
 	/* Check rising of falling*/
 	if (HAL_GPIO_ReadPin(GPIOA, ENC3_A_Pin)){
 		/* high means the interrupt was rising */
