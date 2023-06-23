@@ -27,16 +27,15 @@ def main():
     print("Hello World!")
     
     # Establish connection with the serial ports
-    ser_right = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_338C36623034-if00')   # open serial port
+    ser_right = serial.Serial('COM7')   # open serial port
     print(ser_right.name)               # check which port was really used
     
-    ser_middle = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_388D38403238-if00') # open serial port
+    ser_middle = serial.Serial('COM8') # open serial port
     print(ser_middle.name)              # check which port was really used
     
-    ser_left = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_386739803237-if00')   # open serial port
+    ser_left = serial.Serial('COM6')   # open serial port
     print(ser_left.name)                # check which port was really used
     
-    """
     # Send zero command
     send_zero_command = input("Send zero command ('y' if 'yes')?: ")
     
@@ -45,9 +44,9 @@ def main():
         print(sent_message)
         print('')
         ser_right.write(sent_message)
+        ser_middle.write(sent_message)
         ser_left.write(sent_message)
     
-    """
     
     
     # Start initializing the system by moving it manually
@@ -167,7 +166,7 @@ def main():
             x_t = (x_t+move_x >= x_limit_ref) if (x_limit_ref) else (-x_limit_ref)
             
         # y fix #################################################################################################################################################################
-        y_limit_ref = 350
+        y_limit_ref = 270
         
         if(y_t+move_y < y_limit_ref and y_t+move_y > -y_limit_ref):
             y_t=y_t+move_y
@@ -369,8 +368,11 @@ def get_xy(background_image, background_image_r):
     cv.imshow('Detected Largest Interior Rectangle', rect_img)
     cv.imshow('Detected Largest Interior Rectangle r', rect_img_r)
     #cv.waitKey(0)
-    delta_x, delta_y = per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r, cont=cont, cont_r=cont_r)
-    
+    try:
+        delta_x, delta_y = per_dir_2.per_dir(shape = rect_img.shape, rect_points=rect_points,rect_points_r=rect_points_r, cont=cont, cont_r=cont_r)
+    except:
+        delta_x = 0
+        delta_y = 0
     
     """
     # limitations
@@ -433,12 +435,12 @@ def initialize_camera():
     global vid_r
     global frame
     # define a video capture object
-    vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0-video-index0") 
+    vid = cv.VideoCapture(0) 
     vid.set(cv.CAP_PROP_SHARPNESS,15)#0 15 2 ##min max default
     vid.set(cv.CAP_PROP_BRIGHTNESS,0)#-64 64 0
     vid.set(cv.CAP_PROP_SATURATION,37)#0 100 37
     vid.set(cv.CAP_PROP_CONTRAST,33)#0 100   33                                     # 0 : webcam, to find other cameras, change the number                                              # 0 : webcam, to find other cameras, change the number
-    vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
+    vid_r=cv.VideoCapture(2)                                                # 1 : reversed x y axis cam
     vid_r.set(cv.CAP_PROP_SHARPNESS,15)
     vid_r.set(cv.CAP_PROP_BRIGHTNESS,0)
     vid_r.set(cv.CAP_PROP_SATURATION,37) 
@@ -452,15 +454,15 @@ def process_background(background_image, background_image_r):
     
     # background masks before perspective
     # back
-    pts=np.array([[208, 137],[236,137],[205,245],[168,244]],np.int32)
+    pts=np.array([[218, 137],[242,137],[220,225],[188,225]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image,[pts],255)
 
-    pts=np.array([[289,139],[339,139],[344,243],[281,241]],np.int32)
+    pts=np.array([[293,129],[348,135],[356,241],[290,241]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image,[pts],255)
 
-    pts=np.array([[285,1],[299,1],[308,145],[291,149]],np.int32)
+    pts=np.array([[297,1],[309,1],[322,155],[296,155]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image,[pts],255)
 
@@ -473,7 +475,7 @@ def process_background(background_image, background_image_r):
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image_r,[pts],255)
 
-    pts=np.array([[297,1],[303,170],[320,149],[311,1]],np.int32)
+    pts=np.array([[301,1],[311,170],[320,149],[317,1]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image_r,[pts],255)
 

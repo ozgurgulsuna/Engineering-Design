@@ -6,7 +6,7 @@ import cv2 as cv
 import per_dir_2
 import img_compare
 import perspective_2
-import rect_detect_2 as rect_detect
+import rect_detect as rect_detect
 import background
 import numpy as np
 # necessary to add delays to the system
@@ -26,12 +26,12 @@ def camera_thread_r():
 
 
 # define a video capture object
-vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0-video-index0") 
+vid = cv.VideoCapture(0) 
 vid.set(cv.CAP_PROP_SHARPNESS,15)#0 15 2 ##min max default
 vid.set(cv.CAP_PROP_BRIGHTNESS,0)#-64 64 0
 vid.set(cv.CAP_PROP_SATURATION,37)#0 100 37
 vid.set(cv.CAP_PROP_CONTRAST,33)#0 100   33                                     # 0 : webcam, to find other cameras, change the number                                              # 0 : webcam, to find other cameras, change the number
-vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
+vid_r=cv.VideoCapture(1)                                                # 1 : reversed x y axis cam
 vid_r.set(cv.CAP_PROP_SHARPNESS,15)
 vid_r.set(cv.CAP_PROP_BRIGHTNESS,0)
 vid_r.set(cv.CAP_PROP_SATURATION,37) 
@@ -161,10 +161,11 @@ while(1):
     # to stop video stream, press "q"
 
     if (pressed == ord('x')):
+        print("pressed x")
         i=i+1
         cv.destroyAllWindows()
     # capture an image to process
-    while(i==2):
+    while(i==1):
 
         
         if (pressed == ord('q')):

@@ -9,7 +9,7 @@ import background
 import perspective_2
 import img_compare
 import per_dir_2
-import rect_detect_2 as rect_detect
+import rect_detect as rect_detect
 
 
 # Define commands
@@ -383,12 +383,12 @@ def initialize_camera():
     global vid_r
     global frame
     # define a video capture object
-    vid = cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0-video-index0") 
+    vid = cv.VideoCapture(2) 
     vid.set(cv.CAP_PROP_SHARPNESS,15)#0 15 2 ##min max default
     vid.set(cv.CAP_PROP_BRIGHTNESS,0)#-64 64 0
     vid.set(cv.CAP_PROP_SATURATION,37)#0 100 37
     vid.set(cv.CAP_PROP_CONTRAST,33)#0 100   33                                     # 0 : webcam, to find other cameras, change the number                                              # 0 : webcam, to find other cameras, change the number
-    vid_r=cv.VideoCapture("/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0")                                                # 1 : reversed x y axis cam
+    vid_r=cv.VideoCapture(1)                                                # 1 : reversed x y axis cam
     vid_r.set(cv.CAP_PROP_SHARPNESS,15)
     vid_r.set(cv.CAP_PROP_BRIGHTNESS,0)
     vid_r.set(cv.CAP_PROP_SATURATION,37) 
@@ -402,15 +402,15 @@ def process_background(background_image, background_image_r):
     
     # background masks before perspective
     # back
-    pts=np.array([[208, 137],[236,137],[205,245],[168,244]],np.int32)
+    pts=np.array([[218, 137],[242,137],[220,225],[188,225]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image,[pts],255)
 
-    pts=np.array([[289,139],[339,139],[344,243],[281,241]],np.int32)
+    pts=np.array([[293,129],[348,135],[356,241],[290,241]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image,[pts],255)
 
-    pts=np.array([[285,1],[299,1],[308,145],[291,149]],np.int32)
+    pts=np.array([[297,1],[309,1],[322,155],[296,155]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image,[pts],255)
 
@@ -423,7 +423,7 @@ def process_background(background_image, background_image_r):
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image_r,[pts],255)
 
-    pts=np.array([[297,1],[303,170],[320,149],[311,1]],np.int32)
+    pts=np.array([[301,1],[311,170],[320,149],[317,1]],np.int32)
     pts=pts.reshape((-1,1,2))
     cv.fillPoly(background_image_r,[pts],255)
 

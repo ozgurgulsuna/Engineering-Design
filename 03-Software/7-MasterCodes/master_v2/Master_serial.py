@@ -9,7 +9,7 @@ import background
 import perspective_2
 import img_compare
 import per_dir_2
-import rect_detect_2 as rect_detect
+import rect_detect as rect_detect
 
 
 # Define commands
@@ -26,16 +26,16 @@ def main():
     print("Hello World!")
     
     # Establish connection with the serial ports
-    ser_right = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_338C36623034-if00')   # open serial port
+    ser_right = serial.Serial('COM7')   # open serial port
     print(ser_right.name)               # check which port was really used
     
-    ser_middle = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_388D38403238-if00') # open serial port
+    ser_middle = serial.Serial('COM8') # open serial port
     print(ser_middle.name)              # check which port was really used
     
-    ser_left = serial.Serial('/dev/serial/by-id/usb-STMicroelectronics_STM32_Virtual_ComPort_386739803237-if00')   # open serial port
+    ser_left = serial.Serial('COM6')   # open serial port
     print(ser_left.name)                # check which port was really used
     
-    """
+    
     # Send zero command
     send_zero_command = input("Send zero command ('y' if 'yes')?: ")
     
@@ -44,9 +44,10 @@ def main():
         print(sent_message)
         print('')
         ser_right.write(sent_message)
+        ser_middle.write(sent_message)
         ser_left.write(sent_message)
         
-    """
+
     
     # Start initializing the system by moving it manually
     right_pole_initialize = input("Start initializing right pole ('y' if 'yes')?: ")

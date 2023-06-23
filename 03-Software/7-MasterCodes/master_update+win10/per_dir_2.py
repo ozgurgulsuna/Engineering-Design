@@ -1,8 +1,8 @@
 import cv2 as cv
 import numpy as np
 def per_dir(shape,rect_points,rect_points_r, cont, cont_r):
-    cont=cont[0][0][:, 0, :]
-    cont_r=cont_r[0][0][:, 0, :]
+    cont=cont[0]
+    cont_r=cont_r[0]
     base = np.zeros(shape,dtype="uint8")
     base_r = np.zeros(shape,dtype="uint8")
     # returns required movement 
@@ -34,8 +34,8 @@ def per_dir(shape,rect_points,rect_points_r, cont, cont_r):
     
     #### base_ratio===ekranda görünmesi gereken yerin x/y oranı
     # smaller y, larger area
-    contour_image = np.zeros_like(base)
-    contour_image_r = np.zeros_like(base_r)
+    contour_image = np.zeros(shape,dtype="uint8")
+    contour_image_r = np.zeros(shape,dtype="uint8")
     cv.rectangle(base,(base_x,base_y),(base_x+base_w,639),255,-1)
     cv.rectangle(base_r,(base_x_r,base_y_r),(base_x_r+base_w_r,639),255,-1)
     
@@ -43,7 +43,7 @@ def per_dir(shape,rect_points,rect_points_r, cont, cont_r):
     cv.drawContours(contour_image_r, cont_r, -1, (255), thickness=cv.FILLED)
     intersection = cv.bitwise_and(contour_image, base)
     intersection_r = cv.bitwise_and(contour_image_r, base_r)
-    intersection_area = cv.countNonZero(intersection)
+    intersection_area = cv.countNonZero(intersection) 
     white_area = cv.countNonZero(base)
     intersection_area_r = cv.countNonZero(intersection_r)
     white_area_r = cv.countNonZero(base_r)

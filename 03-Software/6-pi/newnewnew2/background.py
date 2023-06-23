@@ -5,7 +5,7 @@ import cv2
 
 def background(cap,cap_r):
     i=1
-    
+    """
     while(True):
         _ , back = cap.read()
         _ , back_r = cap_r.read()
@@ -28,7 +28,7 @@ def background(cap,cap_r):
             break
             return
         # cap = cv2.VideoCapture(0)
-    
+    """
     ##############################################
     # get the path/directory
     folder_dir = "back" #######directorrrrrry
